@@ -25,6 +25,15 @@ via `semantic-release` (see `.github/workflows/release.yml`).
 
 ### Changed
 
+- Dependabot groups GitHub Actions and npm minor/patch updates; Terraform
+  provider major constraint bumps are ignored. Raising a provider floor is
+  a planned `BREAKING CHANGE`, not a bot merge
+- `modules/github-aws-oidc` accepts AWS provider 5.x and 6.x
+  (`>= 5.0, < 7.0`); `modules/github-wif-oidc` accepts Google provider
+  6.x–8.x (`>= 6.0, < 9.0`)
+- CI pins `actions/checkout` v7.0.1, `hashicorp/setup-terraform` v4.0.1,
+  `actions/dependency-review-action` v5.0.0, and
+  `amannn/action-semantic-pull-request` v6.1.1 (Node 24 runtimes)
 - `bootstrap/github/actions` no longer requires AWS or GCP. Cloud
   identity is an optional `bootstrap/<provider>/identity` add-on; Actions
   variables are wired from environment outputs after identity is applied
