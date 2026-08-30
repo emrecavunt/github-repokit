@@ -16,7 +16,7 @@ bootstrap/gcp/identity/        # optional GCP WIF
 `github/actions` applies without AWS or GCP. See
 `examples/repository-consumer` for the copy-ready split.
 
-**Apply is human-gated.** Requires a GitHub token with repo admin on
+**Apply is human-gated.** It needs a GitHub token with repo admin on
 `emrecavunt/github-repokit`.
 
 ```sh

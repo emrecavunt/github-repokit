@@ -5,62 +5,61 @@
 [![Release](https://img.shields.io/github/v/release/emrecavunt/github-repokit?include_prereleases&sort=semver)](https://github.com/emrecavunt/github-repokit/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-Terraform modules that put GitHub repository governance in the repo itself:
-settings, team and collaborator access, branch protection, CODEOWNERS, and
-Actions environments. Optional AWS or GCP OIDC identity can be added when
-workflows need keyless cloud access. Neither cloud is required to bootstrap
-GitHub Actions.
+GitHub repository settings do not belong in the org console, and they do not
+belong in a platform team's memory. They belong in the product repo, versioned
+next to the code they protect.
 
-Clone it, point Terragrunt at a module, and each product repo can own its
-GitHub configuration the same way it owns its application code. Organization
-membership, billing, and org-wide policy stay elsewhere. This repo is
-deliberately per-repository.
+These Terraform modules manage **one** repository: settings, team and
+collaborator access, branch protection, CODEOWNERS, and Actions environments.
+Optional AWS or GCP OIDC identity can be added when workflows need keyless
+cloud access. Neither cloud is required to bootstrap GitHub Actions.
 
-## What's in the box
+Clone it, point Terragrunt at a module, and each product repo owns its GitHub
+configuration the same way it owns its application code.
 
-- **`modules/github-repository`**: one repo's settings, team/user access,
+This library does **not** write workflow YAML and does **not** manage the
+GitHub organization. Workflows stay in `.github/workflows/` of each consumer.
+Org-level teams, rulesets, membership, billing, and SSO belong in a separate
+org stack.
+
+## Modules
+
+- **`modules/github-repository`**: one repo's settings, team and user access,
   branch protection (signed commits, reviews, required checks), CODEOWNERS,
   GitHub environments, and Actions variables (per-environment or repo-scoped)
 - **`modules/github-aws-oidc`**: optional AWS IAM OIDC role for GitHub
   Actions. Assume-role trust is scoped to owner/repo, with Secrets Manager
-  and SSM read on the ARNs you pass. No long-lived AWS key in CI
+  and SSM read on the ARNs you pass
 - **`modules/github-wif-oidc`**: optional GCP Workload Identity Federation.
   Creates a Terraform apply service account, project IAM, and an optional
-  project-local WIF pool/provider. No long-lived JSON key in CI
+  project-local WIF pool and provider
 - **`examples/repository-consumer`**: a copy-ready Terragrunt split.
   `github/repository` and `github/actions` come first (no cloud), then
   optional `aws/identity` or `gcp/identity` if workflows need that provider
 - **`bootstrap/github`**: this repository managing itself with the same module
-- **A Makefile front-end**: `make` lists everything, `make check` is what CI
-  runs
-- **CI**: Terraform `fmt` + `validate` on every PR, conventional PR titles
-- **Scans**: CodeQL on Actions workflows, dependency review on PRs, Trivy
-  via `make check`
-- **Releases**: conventional commits on `main` cut a semver tag (`vX.Y.Z`)
-  and a GitHub Release via `semantic-release`
-- **Dependabot** for GitHub Actions and Terraform providers
 
-The catch: this does **not** write workflow YAML and does **not** manage the
-GitHub organization. Workflows stay in `.github/workflows/` of each consumer.
-Org-level teams, rulesets, and SSO belong in a separate org stack.
+`make` lists every target. `make check` is what CI runs: Terraform `fmt` and
+`validate`, TFLint, and Trivy when those tools are installed. Pushes to
+`main` cut a semver tag via `semantic-release`. Pin consumers to a published
+tag (`?ref=v1.0.0`), not `main`.
 
 ## How it works
 
 Diagrams live in [`docs/diagrams/`](docs/diagrams/) as self-contained HTML
 with SVG exports. Click through for the full-size interactive versions.
 
-**The OIDC token exchange**: a workflow job trades a per-run GitHub JWT for
-short-lived cloud credentials; no key is ever stored in GitHub:
+**The OIDC token exchange.** A workflow job trades a per-run GitHub JWT for
+short-lived cloud credentials. The job does not need a stored cloud key:
 
 [![How GitHub Actions gets keyless cloud access](docs/diagrams/oidc-token-exchange.svg)](docs/diagrams/oidc-token-exchange.html)
 
-**What the modules configure**: `github-repository` owns settings and
-Actions environments inside GitHub; the optional identity modules create the
-AWS role and GCP WIF resources whose outputs feed Actions variables:
+**What the modules apply.** `github-repository` owns settings and Actions
+environments inside GitHub. The optional identity modules create the AWS role
+and GCP WIF resources whose outputs feed Actions variables:
 
 [![What github-repokit configures](docs/diagrams/repo-architecture.svg)](docs/diagrams/repo-architecture.html)
 
-**The trust gates**: every credential exchange passes the issuer-signature,
+**The trust gates.** Every credential exchange must pass the issuer signature,
 audience, and repository-claim checks before scoped, expiring credentials
 are minted:
 
@@ -84,7 +83,7 @@ make check
 
 | Target           | What it does                                          |
 | ---------------- | ----------------------------------------------------- |
-| `make check`     | Format + validate + lint + Trivy (what CI runs)       |
+| `make check`     | Format, validate, lint, and Trivy (what CI runs)      |
 | `make fmt`       | `terraform fmt` and `terragrunt hcl format`           |
 | `make validate`  | Validate each module and the `bootstrap/` stack       |
 | `make tg-plan`   | Plan the self-bootstrap stack                         |
@@ -174,14 +173,14 @@ inputs = {
 
 When `manage_repository_settings = true` and the GitHub repo already exists,
 the module imports `github_repository.settings[0]` on first apply
-(`import_existing_repository = true`, default). Set that input to `false`
+(`import_existing_repository = true`, the default). Set that input to `false`
 only when this stack should create a new repository.
 
-The legacy inputs still work:
+The older environment inputs still work:
 
-- `github_environments` + `github_actions_variables` (same variables for
-  every environment)
-- `github_environment_configs` overrides legacy values for matching
+- `github_environments` plus `github_actions_variables` (the same variables
+  for every environment)
+- `github_environment_configs` overrides those values for matching
   environment names
 
 ## Optional cloud identity (AWS or GCP)
@@ -189,10 +188,10 @@ The legacy inputs still work:
 Identity stacks are add-ons. Apply `bootstrap/github/actions` without them.
 When a workflow needs keyless access, add `bootstrap/<provider>/identity`
 and pass the outputs into Actions variables (`AWS_ROLE_ARN`,
-`GCP_WORKLOAD_IDENTITY_PROVIDER`, …). A new provider follows the same
+`GCP_WORKLOAD_IDENTITY_PROVIDER`, and so on). A new provider follows the same
 shape.
 
-### AWS OIDC (secrets)
+### AWS OIDC
 
 ```hcl
 terraform {
@@ -324,9 +323,9 @@ Pin consumers to a published tag (`?ref=v1.0.0`), not `main`.
 
 ## Security
 
-See [SECURITY.md](SECURITY.md). In short: report privately, pin module
-versions, prefer OIDC/WIF over stored cloud keys, and keep production
-GitHub environments `protected = true`.
+See [SECURITY.md](SECURITY.md). Report privately, pin module versions, prefer
+OIDC or WIF over stored cloud keys, and keep production GitHub environments
+`protected = true`.
 
 ## License
 

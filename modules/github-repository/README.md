@@ -3,13 +3,18 @@
 Per-repository GitHub governance: settings, team and collaborator access,
 branch protection, CODEOWNERS, environments, and Actions variables.
 
+This module does not write workflow YAML. It does not manage the GitHub
+organization. Use it twice in a consumer: once for settings, once for
+environments.
+
 ## What it manages
 
 - Optional `github_repository` settings (visibility, topics, homepage,
   issues, wiki, Dependabot alerts, delete-branch-on-merge,
   `archive_on_destroy`)
 - Team and user collaborator permissions
-- Branch protection v3 (signed commits, reviews, required checks)
+- Branch protection v3 (signed commits, reviews, required checks). The
+  pattern should be an exact branch name
 - `.github/CODEOWNERS` as a managed file
 - GitHub environments, including protected production environments
 - Actions variables at environment scope, and optionally at repo scope
@@ -38,13 +43,13 @@ bootstrap/github/repository/   # manage_repository_settings = true
 bootstrap/github/actions/      # manage_repository_settings = false
 ```
 
-Keep settings, teams, branch protection, and CODEOWNERS on
-`repository`. Keep `github_environment_configs` on `actions`.
-The actions stack does not require AWS or GCP. Optional identity
-lives under `bootstrap/aws/identity` or `bootstrap/gcp/identity`.
+Keep settings, teams, branch protection, and CODEOWNERS on `repository`.
+Keep `github_environment_configs` on `actions`. The actions stack does not
+require AWS or GCP. Optional identity lives under
+`bootstrap/aws/identity` or `bootstrap/gcp/identity`.
 
 ## Environments
 
 Prefer `github_environment_configs` for per-environment variables and
-protection. The older `github_environments` + `github_actions_variables`
+protection. The older `github_environments` plus `github_actions_variables`
 pair still works; matching names in `github_environment_configs` win.

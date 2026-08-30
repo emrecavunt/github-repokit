@@ -41,7 +41,7 @@ generate "provider" {
   if_exists = "overwrite_terragrunt"
   contents  = <<EOF
 variable "github_owner" {
-  description = "GitHub organization or user owner."
+  description = "GitHub organization or user that owns the repository."
   type        = string
 }
 

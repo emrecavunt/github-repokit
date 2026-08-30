@@ -1,5 +1,5 @@
 output "oidc_provider_arn" {
-  description = "IAM OIDC provider ARN for token.actions.githubusercontent.com."
+  description = "ARN of the IAM OIDC provider for token.actions.githubusercontent.com."
   value       = local.oidc_provider_arn
 }
 

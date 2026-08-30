@@ -8,7 +8,7 @@ terraform {
 
 inputs = {
   repo_name    = "github-repokit"
-  description  = "Terraform modules to bootstrap GitHub repository settings, branch protection, CODEOWNERS, Actions environments, and keyless GCP OIDC/WIF."
+  description  = "Per-repository GitHub governance as Terraform: settings, access, branch protection, CODEOWNERS, and Actions environments. Optional AWS OIDC and GCP WIF. Does not manage the org or write workflow YAML."
   visibility   = "public"
   homepage_url = "https://github.com/emrecavunt/github-repokit"
   topics = [

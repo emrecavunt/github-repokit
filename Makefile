@@ -5,7 +5,7 @@ Version := v0.1.0
 ##@ General
 
 .PHONY: help
-help: ## Show help
+help: ## List available targets
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
 
 ##@ Dependencies
@@ -67,7 +67,7 @@ fmt: ## Format Terraform and Terragrunt files
 	@$(TERRAFORM_CMD) fmt -recursive
 
 .PHONY: validate
-validate: ## Validate Terraform and Terragrunt configurations
+validate: ## Validate each module and the Terragrunt stack
 	@echo "Validating Terragrunt files..."
 	$(call run-in-tg-dir,$(TERRAGRUNT_CMD) hcl validate --all --inputs,Skipping Terragrunt runtime validation.)
 	@echo "Validating Terraform modules..."
@@ -85,15 +85,15 @@ scan: ## Run Trivy config scan when available
 	$(call run-optional-tool,$(TRIVY),Trivy config scan,$(TRIVY) config .,scan)
 
 .PHONY: tg-init
-tg-init: ## Initialize Terragrunt and Terraform configurations
+tg-init: ## Initialize the self-bootstrap Terragrunt stack
 	$(call run-in-tg-dir,$(TERRAGRUNT_CMD) init --all --non-interactive,Nothing to initialize.)
 
 .PHONY: tg-plan
-tg-plan: ## Plan the Terraform configuration
+tg-plan: ## Plan the self-bootstrap stack
 	$(call run-in-tg-dir,$(TERRAGRUNT_CMD) plan --all --non-interactive,Nothing to plan.)
 
 .PHONY: tg-import-repo-settings
-tg-import-repo-settings: ## Import existing repository settings resource (set REPO_NAME)
+tg-import-repo-settings: ## Import existing github_repository.settings[0] (set REPO_NAME)
 	@if [ -z "$(REPO_NAME)" ]; then \
 		echo "Usage: make tg-import-repo-settings REPO_NAME=<repo-name>"; \
 		exit 1; \
@@ -105,15 +105,15 @@ tg-import-repo-settings: ## Import existing repository settings resource (set RE
 	fi
 
 .PHONY: apply
-apply: ## Apply the Terraform configuration
+apply: ## Apply the self-bootstrap stack
 	$(call run-in-tg-dir,$(TERRAGRUNT_CMD) apply --all --non-interactive --auto-approve,Nothing to apply.)
 
 # Run all checks
 .PHONY: check
-check: fmt validate lint scan ## Run format, validate, lint, and scan
+check: fmt validate lint scan ## Format, validate, lint, and scan (what CI runs)
 
 .PHONY: all
-all: ## Apply all Terraform configurations (or run checks if no live stack exists)
+all: ## Apply the self-bootstrap stack, or run checks when no live stack exists
 	@if [ -d "$(TERRAGRUNT_DIR)" ]; then \
 		cd $(TERRAGRUNT_DIR) && $(TERRAGRUNT_CMD) run --all --non-interactive apply --experiment cli-redesign; \
 	else \

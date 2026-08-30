@@ -1,20 +1,20 @@
 variable "service_account_project_id" {
-  description = "Project id where the Terraform apply service account is created."
+  description = "GCP project ID where the Terraform apply service account is created."
   type        = string
 }
 
 variable "service_account_id" {
-  description = "Service account id for Terraform apply identity."
+  description = "Service account ID for the Terraform apply identity."
   type        = string
 }
 
 variable "service_account_display_name" {
-  description = "Display name for Terraform apply service account."
+  description = "Display name for the Terraform apply service account."
   type        = string
 }
 
 variable "github_repository" {
-  description = "Primary GitHub repository in owner/repo format allowed to impersonate the service account. Deprecated in favor of github_repositories."
+  description = "Primary GitHub repository in owner/repo format allowed to impersonate the service account. Deprecated; use github_repositories."
   type        = string
   default     = ""
 
@@ -44,13 +44,13 @@ variable "github_repositories" {
 }
 
 variable "workload_identity_pool_name" {
-  description = "Existing workload identity pool full resource name (projects/<number>/locations/global/workloadIdentityPools/<pool>). Required when create_project_wif_provider=false."
+  description = "Full resource name of an existing workload identity pool (projects/<number>/locations/global/workloadIdentityPools/<pool>). Required when create_project_wif_provider is false."
   type        = string
   default     = ""
 }
 
 variable "workload_identity_provider_name" {
-  description = "Existing workload identity provider full resource name used by GitHub Actions auth. Required when create_project_wif_provider=false."
+  description = "Full resource name of an existing workload identity provider used by GitHub Actions. Required when create_project_wif_provider is false."
   type        = string
   default     = ""
 
@@ -64,25 +64,25 @@ variable "workload_identity_provider_name" {
 }
 
 variable "create_project_wif_provider" {
-  description = "Whether to create a dedicated GitHub Workload Identity Pool + Provider in service_account_project_id."
+  description = "When true, create a dedicated GitHub Workload Identity Pool and provider in service_account_project_id."
   type        = bool
   default     = false
 }
 
 variable "workload_identity_pool_id" {
-  description = "Workload identity pool ID when create_project_wif_provider=true."
+  description = "Workload identity pool ID used when create_project_wif_provider is true."
   type        = string
   default     = "github"
 }
 
 variable "workload_identity_provider_id" {
-  description = "Workload identity provider ID when create_project_wif_provider=true."
+  description = "Workload identity provider ID used when create_project_wif_provider is true."
   type        = string
   default     = "github"
 }
 
 variable "github_owner" {
-  description = "GitHub organization or user expected in OIDC claims when create_project_wif_provider=true."
+  description = "GitHub organization or user expected in OIDC claims when create_project_wif_provider is true."
   type        = string
   default     = ""
 
@@ -93,13 +93,13 @@ variable "github_owner" {
 }
 
 variable "github_provider_attribute_condition" {
-  description = "Optional OIDC provider attribute condition override when create_project_wif_provider=true. When null, the default matches github_owner and the trusted repository list."
+  description = "Optional OIDC provider attribute condition override when create_project_wif_provider is true. When null, the default matches github_owner and the trusted repository list."
   type        = string
   default     = null
   nullable    = true
 }
 
 variable "target_project_roles" {
-  description = "Map of project_id => list of roles granted to the Terraform apply service account."
+  description = "Map of GCP project ID to the list of roles granted to the Terraform apply service account."
   type        = map(list(string))
 }

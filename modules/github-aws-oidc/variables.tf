@@ -1,5 +1,5 @@
 variable "additional_policy_arns" {
-  description = "Existing IAM policy ARNs attached to the GitHub Actions role, for permissions beyond secrets read."
+  description = "Existing IAM policy ARNs attached to the GitHub Actions role for permissions beyond secrets read."
   type        = list(string)
   default     = []
 }
@@ -19,7 +19,7 @@ variable "allowed_environments" {
 }
 
 variable "create_oidc_provider" {
-  description = "Whether to create the account-level GitHub OIDC provider. Set false and pass oidc_provider_arn to reuse an existing provider."
+  description = "When true, create the account-level GitHub OIDC provider. Set false and pass oidc_provider_arn to reuse an existing provider."
   type        = bool
   default     = true
 }
@@ -78,7 +78,7 @@ variable "max_session_duration" {
 }
 
 variable "oidc_audiences" {
-  description = "OIDC audiences allowed to assume the role. sts.amazonaws.com is what aws-actions/configure-aws-credentials sends."
+  description = "OIDC audiences allowed to assume the role. aws-actions/configure-aws-credentials sends sts.amazonaws.com."
   type        = list(string)
   default     = ["sts.amazonaws.com"]
 
@@ -106,7 +106,7 @@ variable "oidc_thumbprints" {
 }
 
 variable "role_description" {
-  description = "Description for the IAM role assumed by GitHub Actions."
+  description = "Human-readable description stored on the IAM role assumed by GitHub Actions."
   type        = string
   default     = "GitHub Actions OIDC role for reading AWS secrets."
 }

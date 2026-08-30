@@ -9,17 +9,17 @@ fmt: ## Format Terraform and Terragrunt files
 	terragrunt hcl format
 	terraform fmt -recursive
 
-validate: ## Validate Terragrunt configuration
+validate: ## Validate the Terragrunt stack
 	terragrunt hcl validate --all --inputs
 
-tg-init: ## Initialize Terragrunt
+tg-init: ## Initialize the AWS identity stack
 	terragrunt run --all init --non-interactive
 
-tg-plan: ## Plan AWS identity bootstrap resources
+tg-plan: ## Plan the AWS identity stack
 	terragrunt run --all plan --non-interactive
 
-apply: ## Apply AWS identity bootstrap resources
+apply: ## Apply the AWS identity stack
 	terragrunt run --all apply --non-interactive --no-auto-approve
 
-output: ## Print identity outputs
+output: ## Print AWS identity outputs
 	cd identity && terragrunt output

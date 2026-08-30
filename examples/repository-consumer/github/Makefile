@@ -9,19 +9,19 @@ fmt: ## Format Terraform and Terragrunt files
 	terragrunt hcl format
 	terraform fmt -recursive
 
-validate: ## Validate Terragrunt configuration
+validate: ## Validate the Terragrunt stack
 	terragrunt hcl validate --all --inputs
 
-tg-init: ## Initialize Terragrunt
+tg-init: ## Initialize the GitHub Terragrunt stacks
 	terragrunt run --all init --non-interactive
 
-tg-plan: ## Plan GitHub bootstrap resources
+tg-plan: ## Plan the GitHub stacks
 	terragrunt run --all plan --non-interactive
 
-apply: ## Apply GitHub bootstrap resources
+apply: ## Apply the GitHub stacks
 	terragrunt run --all apply --non-interactive --no-auto-approve
 
-tg-import-repo-settings: ## Import existing repository settings resource (set REPO_NAME)
+tg-import-repo-settings: ## Import existing github_repository.settings[0] (set REPO_NAME)
 	@if [ -z "$(REPO_NAME)" ]; then \
 		echo "Usage: make tg-import-repo-settings REPO_NAME=<repo-name>"; \
 		exit 1; \

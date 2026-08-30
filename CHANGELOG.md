@@ -2,8 +2,8 @@
 
 All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
-[Semantic Versioning](https://semver.org/). Releases are cut by
-`semantic-release` on `main` (see `.github/workflows/release.yml`).
+[Semantic Versioning](https://semver.org/). Pushes to `main` cut a release
+via `semantic-release` (see `.github/workflows/release.yml`).
 
 ## [Unreleased]
 
@@ -24,3 +24,5 @@ All notable changes to this project are documented here. The format follows
 - `bootstrap/github/actions` no longer requires AWS or GCP. Cloud
   identity is an optional `bootstrap/<provider>/identity` add-on; Actions
   variables are wired from environment outputs after identity is applied
+- README, module docs, and Terraform descriptions rewritten to lead with
+  the per-repo contract, optional identity, and library boundaries

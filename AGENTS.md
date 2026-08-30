@@ -9,6 +9,7 @@ what this codebase deliberately does not do.
 Reusable Terraform modules that bootstrap **per-repository** GitHub
 governance and optional cloud OIDC identity. Consumers source a module
 by git tag from their own Terragrunt stack.
+
 Canonical GitHub layout (what agents create and manage):
 
 - `bootstrap/github/repository`: settings, teams, branch protection, CODEOWNERS
@@ -39,13 +40,13 @@ consumers.
 
 Prefer the Makefile targets; `make` lists them all.
 
-| Task                                  | Command        |
-| ------------------------------------- | -------------- |
-| Format                                | `make fmt`     |
-| Validate modules and stacks           | `make validate`|
-| Lint (TFLint, skipped if missing)     | `make lint`    |
-| Trivy config scan (skipped if missing)| `make scan`    |
-| **Full pre-push gate (what CI runs)** | **`make check`** |
+| Task                                   | Command          |
+| -------------------------------------- | ---------------- |
+| Format                                 | `make fmt`       |
+| Validate modules and stacks            | `make validate`  |
+| Lint (TFLint, skipped if missing)      | `make lint`      |
+| Trivy config scan (skipped if missing) | `make scan`      |
+| **Full pre-push gate (what CI runs)**  | **`make check`** |
 
 Run `make check` before considering any code change done. A change that
 does not pass `make check` is not finished.
@@ -90,18 +91,18 @@ These are load-bearing. Breaking them breaks the consumer contract.
 
 ## Testing
 
-CI runs `terraform fmt -check -recursive` and `terraform init` +
+CI runs `terraform fmt -check -recursive` and `terraform init` plus
 `validate` for each directory under `modules/`. There is no live GitHub
 or cloud apply in CI. A change that cannot validate with `-backend=false`
 is not finished.
 
 New module inputs need a matching `variable` description, a default or a
-clear required contract, and a README / example mention when they change
+clear required contract, and a README or example mention when they change
 the consumer path.
 
 ## CI/CD
 
-- `.github/workflows/ci.yml` = conventional PR title + Terraform checks
+- `.github/workflows/ci.yml`: conventional PR title plus Terraform checks
 - CodeQL and dependency-review scan PRs
 - Releases: pushes to `main` run `semantic-release` and cut `vX.Y.Z`
 - `CHANGELOG.md` follows Keep a Changelog. Add user-facing changes

@@ -1,10 +1,10 @@
 output "repository" {
-  description = "Managed repository name."
+  description = "Name of the managed GitHub repository."
   value       = var.repo_name
 }
 
 output "team_repository_assignments" {
-  description = "Managed team to repository assignments."
+  description = "Team-to-repository permission assignments created by this module."
   value = {
     for key, resource in github_team_repository.this : key => {
       team_id    = resource.team_id
@@ -14,7 +14,7 @@ output "team_repository_assignments" {
 }
 
 output "user_collaborators" {
-  description = "Managed user collaborators."
+  description = "User collaborators and their repository permissions."
   value = {
     for key, resource in github_repository_collaborator.this : key => {
       username   = resource.username
@@ -24,22 +24,22 @@ output "user_collaborators" {
 }
 
 output "branch_protection_rules" {
-  description = "Managed branch protection rule keys."
+  description = "Keys of the branch protection rules this module manages."
   value       = keys(github_branch_protection_v3.this)
 }
 
 output "repository_settings_managed" {
-  description = "Whether repository settings management is enabled."
+  description = "Whether this stack owns github_repository settings."
   value       = var.manage_repository_settings
 }
 
 output "github_environments" {
-  description = "Managed GitHub environment names."
+  description = "Names of the GitHub environments this module manages."
   value       = sort(keys(github_repository_environment.this))
 }
 
 output "github_actions_variable_names" {
-  description = "Managed GitHub Actions variable names."
+  description = "GitHub Actions variable names written at environment and repository scope."
   value = {
     environment = distinct([for resource in github_actions_environment_variable.this : resource.variable_name])
     repository  = keys(github_actions_variable.repo_variables)

@@ -1,8 +1,8 @@
 # github-aws-oidc
 
-Reusable AWS identity bootstrap for GitHub Actions OIDC. Creates (or reuses)
-the account-level GitHub OIDC provider and an IAM role that trusted
-repositories can assume to read Secrets Manager and SSM parameters.
+Optional AWS identity for GitHub Actions OIDC. Creates (or reuses) the
+account-level GitHub OIDC provider and an IAM role that trusted repositories
+can assume to read Secrets Manager and SSM parameters.
 
 This module does **not** write workflow YAML. Consumers call
 `aws-actions/configure-aws-credentials` themselves and pass `role_arn`.
@@ -15,7 +15,7 @@ the repo needs keyless AWS secret access.
 - Optional `token.actions.githubusercontent.com` OIDC provider
 - IAM role with `sts:AssumeRoleWithWebIdentity`, scoped to owner/repo
   (and optionally GitHub environments)
-- Inline policy for Secrets Manager / SSM / KMS decrypt on the ARNs you pass
+- Inline policy for Secrets Manager, SSM, and KMS decrypt on the ARNs you pass
 - Attachments of extra existing IAM policies
 
 ## Inputs
@@ -55,9 +55,9 @@ terraform {
 }
 
 inputs = {
-  role_name           = "github-actions-secrets"
-  github_owner        = "your-org"
-  github_repositories = ["your-org/your-repo"]
+  role_name            = "github-actions-secrets"
+  github_owner         = "your-org"
+  github_repositories  = ["your-org/your-repo"]
   create_oidc_provider = true
 
   secretsmanager_secret_arns = [

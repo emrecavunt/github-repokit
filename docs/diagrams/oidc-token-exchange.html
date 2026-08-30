@@ -60,7 +60,7 @@
 
     <svg viewBox="0 0 960 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="oidc-exchange-title oidc-exchange-desc">
       <title id="oidc-exchange-title">How GitHub Actions gets keyless cloud access</title>
-      <desc id="oidc-exchange-desc">A workflow job requests a per-run OIDC token from GitHub, exchanges it at the cloud security token service which verifies the signature and claims, and receives short-lived credentials to call cloud APIs, with no stored secret.</desc>
+      <desc id="oidc-exchange-desc">A workflow job requests a per-run OIDC token from GitHub, exchanges it at the cloud security token service, which verifies the signature and claims, and receives short-lived credentials. The exchange does not require a stored cloud key.</desc>
       <defs>
         <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
           <polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/>
