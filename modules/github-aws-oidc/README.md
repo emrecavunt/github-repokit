@@ -44,7 +44,7 @@ When that set is empty, the trust policy allows `repo:owner/repo:*`.
 
 ## Outputs
 
-- `role_arn` — set as `AWS_ROLE_ARN` on `bootstrap/github/actions` if you
+- `role_arn`: set as `AWS_ROLE_ARN` on `bootstrap/github/actions` if you
   want workflows to assume this role
 - `role_name`
 - `oidc_provider_arn`

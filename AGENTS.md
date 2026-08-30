@@ -1,7 +1,7 @@
 # AGENTS.md
 
 Guidance for AI coding agents working in this repository. Read this before
-making changes; it tells you how to build, test, and — just as importantly —
+making changes; it tells you how to build, test, and (just as importantly)
 what this codebase deliberately does not do.
 
 ## Project overview
@@ -11,11 +11,11 @@ governance and optional cloud OIDC identity. Consumers source a module
 by git tag from their own Terragrunt stack.
 Canonical GitHub layout (what agents create and manage):
 
-- `bootstrap/github/repository` — settings, teams, branch protection, CODEOWNERS
-- `bootstrap/github/actions` — environments and Actions variables only
+- `bootstrap/github/repository`: settings, teams, branch protection, CODEOWNERS
+- `bootstrap/github/actions`: environments and Actions variables only
   (`manage_repository_settings = false`). Does **not** require AWS or GCP.
-- `bootstrap/aws/identity` — optional AWS OIDC for Actions secrets
-- `bootstrap/gcp/identity` — optional GCP WIF
+- `bootstrap/aws/identity`: optional AWS OIDC for Actions secrets
+- `bootstrap/gcp/identity`: optional GCP WIF
 - A new cloud follows `bootstrap/<provider>/identity` and a
   `modules/github-<provider>-oidc` (or equivalent) module. Do not add
   identity unless the human asks.
@@ -104,7 +104,7 @@ the consumer path.
 - `.github/workflows/ci.yml` = conventional PR title + Terraform checks
 - CodeQL and dependency-review scan PRs
 - Releases: pushes to `main` run `semantic-release` and cut `vX.Y.Z`
-- `CHANGELOG.md` follows Keep a Changelog — add user-facing changes
+- `CHANGELOG.md` follows Keep a Changelog. Add user-facing changes
   under `## [Unreleased]`
 
 ## Boundaries for agents

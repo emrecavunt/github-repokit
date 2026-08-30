@@ -32,4 +32,4 @@ Do not file a public issue for:
   (`modules/github-wif-oidc`) paths so no long-lived cloud key needs to
   live in GitHub Actions
 - Branch protection, signed commits, and CODEOWNERS are first-class
-  module inputs — not afterthoughts
+  module inputs, not afterthoughts

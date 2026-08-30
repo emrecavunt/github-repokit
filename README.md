@@ -13,7 +13,7 @@ GitHub Actions.
 
 Clone it, point Terragrunt at a module, and each product repo can own its
 GitHub configuration the same way it owns its application code. Organization
-membership, billing, and org-wide policy stay elsewhere — this repo is
+membership, billing, and org-wide policy stay elsewhere. This repo is
 deliberately per-repository.
 
 ## What's in the box
@@ -22,14 +22,14 @@ deliberately per-repository.
   branch protection (signed commits, reviews, required checks), CODEOWNERS,
   GitHub environments, and Actions variables (per-environment or repo-scoped)
 - **`modules/github-aws-oidc`**: optional AWS IAM OIDC role for GitHub
-  Actions — assume-role trust scoped to owner/repo, plus Secrets Manager
+  Actions. Assume-role trust is scoped to owner/repo, with Secrets Manager
   and SSM read on the ARNs you pass. No long-lived AWS key in CI
-- **`modules/github-wif-oidc`**: optional GCP Workload Identity Federation
-  — a Terraform apply service account, project IAM, and optional
+- **`modules/github-wif-oidc`**: optional GCP Workload Identity Federation.
+  Creates a Terraform apply service account, project IAM, and an optional
   project-local WIF pool/provider. No long-lived JSON key in CI
-- **`examples/repository-consumer`**: a copy-ready Terragrunt split —
-  `github/repository` and `github/actions` first (no cloud), then optional
-  `aws/identity` or `gcp/identity` if workflows need that provider
+- **`examples/repository-consumer`**: a copy-ready Terragrunt split.
+  `github/repository` and `github/actions` come first (no cloud), then
+  optional `aws/identity` or `gcp/identity` if workflows need that provider
 - **`bootstrap/github`**: this repository managing itself with the same module
 - **A Makefile front-end**: `make` lists everything, `make check` is what CI
   runs
@@ -49,18 +49,18 @@ Org-level teams, rulesets, and SSO belong in a separate org stack.
 Diagrams live in [`docs/diagrams/`](docs/diagrams/) as self-contained HTML
 with SVG exports. Click through for the full-size interactive versions.
 
-**The OIDC token exchange** — a workflow job trades a per-run GitHub JWT for
+**The OIDC token exchange**: a workflow job trades a per-run GitHub JWT for
 short-lived cloud credentials; no key is ever stored in GitHub:
 
 [![How GitHub Actions gets keyless cloud access](docs/diagrams/oidc-token-exchange.svg)](docs/diagrams/oidc-token-exchange.html)
 
-**What the modules configure** — `github-repository` owns settings and
+**What the modules configure**: `github-repository` owns settings and
 Actions environments inside GitHub; the optional identity modules create the
 AWS role and GCP WIF resources whose outputs feed Actions variables:
 
 [![What github-repokit configures](docs/diagrams/repo-architecture.svg)](docs/diagrams/repo-architecture.html)
 
-**The trust gates** — every credential exchange passes the issuer-signature,
+**The trust gates**: every credential exchange passes the issuer-signature,
 audience, and repository-claim checks before scoped, expiring credentials
 are minted:
 
@@ -93,11 +93,11 @@ make check
 ## Per-repository usage
 
 Each product or service repo keeps a small Terragrunt stack under
-`bootstrap/github`. Split it the same way agents should create it:
+`bootstrap/github`, split the same way this repo splits its own:
 
-- **`bootstrap/github/repository`** — settings, teams, branch protection,
+- **`bootstrap/github/repository`**: settings, teams, branch protection,
   CODEOWNERS (`manage_repository_settings = true`)
-- **`bootstrap/github/actions`** — environments and Actions variables
+- **`bootstrap/github/actions`**: environments and Actions variables
   (`manage_repository_settings = false`). AWS and GCP are optional; the
   stack applies without either.
 
@@ -148,7 +148,8 @@ inputs = {
 }
 ```
 
-Actions stack (`bootstrap/github/actions`) — same module, environments only:
+The actions stack (`bootstrap/github/actions`) uses the same module for
+environments only:
 
 ```hcl
 inputs = {
@@ -176,7 +177,7 @@ the module imports `github_repository.settings[0]` on first apply
 (`import_existing_repository = true`, default). Set that input to `false`
 only when this stack should create a new repository.
 
-Legacy compatibility remains available:
+The legacy inputs still work:
 
 - `github_environments` + `github_actions_variables` (same variables for
   every environment)
@@ -252,7 +253,7 @@ A walkthrough with optional AWS and GCP stacks lives in
 
 Every Terragrunt root defaults to local state under `.terragrunt-state/`,
 so nothing beyond a `GITHUB_TOKEN` is needed to start. When an AWS or GCP
-project exists, store state remotely instead — set the backend env vars
+project exists, store state remotely instead. Set the backend env vars
 before `make tg-plan` / `make apply`:
 
 ```bash
@@ -274,7 +275,7 @@ export TG_STATE_BUCKET=my-terraform-state   # must already exist
 | `TG_STATE_DYNAMODB_TABLE` | Optional DynamoDB table for S3 state locking                         |
 
 S3 state is written with `encrypt = true`. The bucket is not created by
-this repo — create it once (with versioning enabled) in the account or
+this repo. Create it once (with versioning enabled) in the account or
 project that the identity stack targets.
 
 ## Self-bootstrap

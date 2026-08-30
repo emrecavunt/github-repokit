@@ -1,8 +1,8 @@
 # bootstrap/
 
-This repository managing itself. The live stack is
-`github/repository` (`modules/github-repository`). There is no
-`github/actions` stack here — this library has no deploy environments.
+This repository manages its own GitHub settings from here. The live stack
+is `github/repository` (`modules/github-repository`). There is no
+`github/actions` stack because this library has no deploy environments.
 
 Consumer repos that need both should use:
 

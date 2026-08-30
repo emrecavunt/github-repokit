@@ -31,7 +31,7 @@ terragrunt import 'github_repository.settings[0]' <repo-name>
 
 ## Consumer layout
 
-Agents should create two stacks that both source this module:
+Consumer repos create two stacks that both source this module:
 
 ```text
 bootstrap/github/repository/   # manage_repository_settings = true

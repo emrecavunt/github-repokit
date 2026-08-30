@@ -3,7 +3,7 @@
       <title id="repo-arch-title">What github-repokit configures</title>
       <desc id="repo-arch-desc">Three Terraform modules apply resources across trust boundaries: github-repository manages repo settings and Actions environments in GitHub, while optional github-aws-oidc and github-wif-oidc create keyless cloud identities whose outputs feed back into Actions variables.</desc>
       <defs>
-        <style>@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;display=swap');</style>
+        <style>@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500,600&amp;display=swap');</style>
         <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
           <polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/>
         </marker>
@@ -73,12 +73,12 @@
       <text x="748" y="529" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">WIF PROVIDER</text>
 
       <!-- ================= ANNOTATION CALLOUTS ================= -->
-      <text x="968" y="32" fill="#2d3142" font-size="14" font-style="italic" font-family="'Instrument Serif', serif" text-anchor="end">workflow YAML stays in each consumer repo —</text>
+      <text x="968" y="32" fill="#2d3142" font-size="14" font-style="italic" font-family="'Instrument Serif', serif" text-anchor="end">workflow YAML stays in each consumer repo;</text>
       <text x="968" y="52" fill="#2d3142" font-size="14" font-style="italic" font-family="'Instrument Serif', serif" text-anchor="end">this stack only provisions</text>
       <path d="M 812,60 Q 816,92 820,116" fill="none" stroke="rgba(45,49,66,0.40)" stroke-width="1" stroke-dasharray="4,3"/>
       <circle cx="820" cy="120" r="2" fill="#2d3142"/>
 
-      <text x="64" y="568" fill="#2d3142" font-size="14" font-style="italic" font-family="'Instrument Serif', serif">AWS and GCP are optional —</text>
+      <text x="64" y="568" fill="#2d3142" font-size="14" font-style="italic" font-family="'Instrument Serif', serif">AWS and GCP are optional;</text>
       <text x="64" y="588" fill="#2d3142" font-size="14" font-style="italic" font-family="'Instrument Serif', serif">the GitHub stack applies without either</text>
       <path d="M 120,552 Q 116,532 112,512" fill="none" stroke="rgba(45,49,66,0.40)" stroke-width="1" stroke-dasharray="4,3"/>
       <circle cx="112" cy="508" r="2" fill="#2d3142"/>
