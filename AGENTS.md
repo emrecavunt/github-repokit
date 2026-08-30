@@ -104,7 +104,9 @@ the consumer path.
 
 - `.github/workflows/ci.yml`: conventional PR title plus Terraform checks
 - CodeQL and dependency-review scan PRs
-- Releases: pushes to `main` run `semantic-release` and cut `vX.Y.Z`
+- Releases: pushes to `main` run `semantic-release` (Node 26, pnpm) and
+  cut `vX.Y.Z`. Root `package.json` is release tooling only; do not
+  publish it to npm.
 - `CHANGELOG.md` follows Keep a Changelog. Add user-facing changes
   under `## [Unreleased]`
 

@@ -1,0 +1,18 @@
+{
+  "name": "github-repokit",
+  "private": true,
+  "description": "Release tooling only. This repository is not published to npm.",
+  "packageManager": "pnpm@11.24.0",
+  "engines": {
+    "node": ">=24.10.0"
+  },
+  "scripts": {
+    "release": "semantic-release"
+  },
+  "devDependencies": {
+    "@semantic-release/commit-analyzer": "13.0.1",
+    "@semantic-release/github": "12.0.9",
+    "@semantic-release/release-notes-generator": "14.1.1",
+    "semantic-release": "25.0.9"
+  }
+}

@@ -26,3 +26,8 @@ via `semantic-release` (see `.github/workflows/release.yml`).
   variables are wired from environment outputs after identity is applied
 - README, module docs, and Terraform descriptions rewritten to lead with
   the per-repo contract, optional identity, and library boundaries
+
+### Fixed
+
+- Release job now runs Node.js 26 with pnpm. semantic-release 25 requires
+  Node `^22.14.0` or `>= 24.10.0`, so the previous Node 20 runner failed.
