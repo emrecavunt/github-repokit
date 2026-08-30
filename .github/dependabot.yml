@@ -5,27 +5,53 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
-
-  - package-ecosystem: terraform
-    directory: /modules/github-repository
-    schedule:
-      interval: weekly
-    open-pull-requests-limit: 5
-
-  - package-ecosystem: terraform
-    directory: /modules/github-wif-oidc
-    schedule:
-      interval: weekly
-    open-pull-requests-limit: 5
-
-  - package-ecosystem: terraform
-    directory: /modules/github-aws-oidc
-    schedule:
-      interval: weekly
-    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "build"
+      include: "scope"
+    groups:
+      github-actions-minor:
+        applies-to: version-updates
+        update-types:
+          - minor
+          - patch
+        patterns:
+          - "*"
 
   - package-ecosystem: npm
     directory: /
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    commit-message:
+      prefix: "build"
+      include: "scope"
+    groups:
+      npm-development-minor:
+        applies-to: version-updates
+        dependency-type: development
+        update-types:
+          - minor
+          - patch
+        patterns:
+          - "*"
+
+  # Library modules declare a compatible provider range. Raising the floor
+  # (dropping an old major) is a documented BREAKING CHANGE, not a bot merge.
+  - package-ecosystem: terraform
+    directories:
+      - /modules/github-repository
+      - /modules/github-wif-oidc
+      - /modules/github-aws-oidc
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "build"
+      include: "scope"
+    ignore:
+      - dependency-name: "hashicorp/aws"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "hashicorp/google"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "integrations/github"
+        update-types: ["version-update:semver-major"]

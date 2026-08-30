@@ -9,6 +9,8 @@ Add it only when workflows need keyless GCP access. AWS uses
 `modules/github-aws-oidc` the same way. This module does not write
 workflow YAML.
 
+Requires the Google provider `>= 6.0, < 9.0`.
+
 ## What it manages
 
 - Terraform apply service account

@@ -4,8 +4,13 @@
 
 The latest release (and `main`) is supported. This is a Terraform module
 library: once you pin a `?ref=`, keeping that pin current is on you.
-Dependabot config ships in `.github/dependabot.yml` for Actions and
-Terraform provider updates.
+
+Dependabot config ships in `.github/dependabot.yml`. GitHub Actions and
+npm minor/patch updates are grouped. Actions majors stay ungrouped so
+they can be reviewed. Terraform provider *major* bumps are ignored:
+raising a provider floor is a documented `BREAKING CHANGE` for this
+library, not a bot merge. The modules declare compatible ranges
+(AWS `>= 5.0, < 7.0`, Google `>= 6.0, < 9.0`, GitHub `~> 6.0`).
 
 ## Reporting a vulnerability
 

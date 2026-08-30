@@ -4,6 +4,8 @@ Optional AWS identity for GitHub Actions OIDC. Creates (or reuses) the
 account-level GitHub OIDC provider and an IAM role that trusted repositories
 can assume to read Secrets Manager and SSM parameters.
 
+Requires the AWS provider `>= 5.0, < 7.0`.
+
 This module does **not** write workflow YAML. Consumers call
 `aws-actions/configure-aws-credentials` themselves and pass `role_arn`.
 
