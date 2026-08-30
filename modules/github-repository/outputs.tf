@@ -25,7 +25,12 @@ output "user_collaborators" {
 
 output "branch_protection_rules" {
   description = "Keys of the branch protection rules this module manages."
-  value       = keys(github_branch_protection_v3.this)
+  value       = sort(concat(keys(github_branch_protection_v3.this), keys(github_branch_protection.this)))
+}
+
+output "owner_is_organization" {
+  description = "Whether this stack treats the GitHub owner as an organization."
+  value       = var.owner_is_organization
 }
 
 output "repository_settings_managed" {

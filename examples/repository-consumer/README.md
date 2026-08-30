@@ -18,6 +18,8 @@ defaults are placeholders.
 
 Do not put environments on the repository stack, and do not manage repo
 settings from the actions stack (`manage_repository_settings = false`).
+Organization owners keep the default `owner_is_organization = true`. For
+a user-owned repository, set it `false` and omit `teams`.
 
 ## Flow
 
@@ -62,7 +64,9 @@ Recommended GitHub overrides:
 
 - `EXAMPLE_GITHUB_OWNER`
 - `EXAMPLE_GITHUB_REPO`
-- `EXAMPLE_GITHUB_USER` (admin collaborator on a personal repo)
+- `EXAMPLE_GITHUB_USER` (admin collaborator). Ignored when it matches
+  `GITHUB_OWNER`; GitHub rejects adding the repository owner as a
+  collaborator
 - `EXAMPLE_CODEOWNERS` (for example `@your-org/platform-engineers`)
 
 Optional AWS identity:

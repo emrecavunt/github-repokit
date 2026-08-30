@@ -176,6 +176,11 @@ the module imports `github_repository.settings[0]` on first apply
 (`import_existing_repository = true`, the default). Set that input to `false`
 only when this stack should create a new repository.
 
+Organization owners are the default (`owner_is_organization = true`): teams
+and REST v3 branch protection apply. For a user-owned repository, set
+`owner_is_organization = false` and omit `teams`. The owner login is never
+added as a collaborator.
+
 The older environment inputs still work:
 
 - `github_environments` plus `github_actions_variables` (the same variables

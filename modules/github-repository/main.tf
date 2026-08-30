@@ -1,3 +1,9 @@
+data "github_repository" "current" {
+  name = var.repo_name
+
+  depends_on = [github_repository.settings]
+}
+
 data "github_team" "by_slug" {
   for_each = local.normalized_teams
   slug     = each.value.slug
@@ -17,6 +23,17 @@ resource "github_repository_collaborator" "this" {
   repository = var.repo_name
   username   = each.value.username
   permission = each.value.permission
+}
+
+resource "terraform_data" "owner_contract" {
+  input = var.owner_is_organization
+
+  lifecycle {
+    precondition {
+      condition     = var.owner_is_organization || length(var.teams) == 0
+      error_message = "teams can only be assigned when owner_is_organization is true."
+    }
+  }
 }
 
 # Adopt an already-created GitHub repo instead of POSTing /orgs/.../repos
@@ -91,8 +108,10 @@ resource "github_actions_variable" "repo_variables" {
   value         = each.value
 }
 
+# REST v3 branch protection is organization-only. User-owned public repos
+# use the GraphQL resource below.
 resource "github_branch_protection_v3" "this" {
-  for_each = var.branch_protection_rules
+  for_each = var.owner_is_organization ? var.branch_protection_rules : {}
 
   repository                      = var.repo_name
   branch                          = each.value.pattern
@@ -112,14 +131,67 @@ resource "github_branch_protection_v3" "this" {
   }
 
   dynamic "restrictions" {
-    for_each = each.value.restrict_push_access ? [1] : []
+    for_each = each.value.restrict_push_access ? [each.value] : []
 
     content {
-      teams = each.value.push_restrictions_teams
-      users = each.value.push_restrictions_users
-      apps  = each.value.push_restrictions_apps
+      teams = restrictions.value.push_restrictions_teams
+      users = restrictions.value.push_restrictions_users
+      apps  = restrictions.value.push_restrictions_apps
     }
   }
+
+  depends_on = [github_repository.settings]
+}
+
+resource "github_branch_protection" "this" {
+  for_each = var.owner_is_organization ? {} : var.branch_protection_rules
+
+  repository_id                   = var.repo_name
+  pattern                         = each.value.pattern
+  enforce_admins                  = each.value.enforce_admins
+  require_signed_commits          = each.value.require_signed_commits
+  require_conversation_resolution = each.value.require_conversation_resolution
+
+  required_pull_request_reviews {
+    dismiss_stale_reviews           = each.value.dismiss_stale_reviews
+    require_code_owner_reviews      = each.value.require_code_owner_reviews
+    required_approving_review_count = each.value.required_approving_review_count
+  }
+
+  dynamic "required_status_checks" {
+    for_each = each.value.required_status_checks ? [each.value] : []
+
+    content {
+      strict   = required_status_checks.value.strict_status_checks
+      contexts = required_status_checks.value.required_status_check_contexts
+    }
+  }
+
+  dynamic "restrict_pushes" {
+    for_each = each.value.restrict_push_access ? [each.value] : []
+
+    content {
+      push_allowances = concat(
+        [
+          for user in restrict_pushes.value.push_restrictions_users :
+          startswith(user, "/") ? user : "/${user}"
+        ],
+        [
+          for team in restrict_pushes.value.push_restrictions_teams :
+          strcontains(team, "/") ? team : "${local.repository_owner}/${team}"
+        ],
+      )
+    }
+  }
+
+  lifecycle {
+    precondition {
+      condition     = !each.value.restrict_push_access || length(each.value.push_restrictions_apps) == 0
+      error_message = "push_restrictions_apps requires owner_is_organization = true."
+    }
+  }
+
+  depends_on = [github_repository.settings]
 }
 
 resource "github_repository_file" "codeowners" {

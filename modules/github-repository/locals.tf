@@ -1,4 +1,6 @@
 locals {
+  repository_owner = split("/", data.github_repository.current.full_name)[0]
+
   codeowners_lines = [
     for pattern, owners in var.codeowners :
     "${pattern} ${join(" ", owners)}"
@@ -9,16 +11,17 @@ locals {
     write = "push"
   }
 
-  normalized_teams = {
+  normalized_teams = var.owner_is_organization ? {
     for key, team in var.teams : key => merge(team, {
       permission = lookup(local.permission_aliases, lower(team.permission), lower(team.permission))
     })
-  }
+  } : {}
 
   normalized_users = {
     for key, user in var.users : key => merge(user, {
       permission = lookup(local.permission_aliases, lower(user.permission), lower(user.permission))
     })
+    if lower(user.username) != lower(local.repository_owner)
   }
 
   configured_environment_definitions = {

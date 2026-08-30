@@ -30,4 +30,8 @@ via `semantic-release` (see `.github/workflows/release.yml`).
 ### Fixed
 
 - Release job now runs Node.js 26 with pnpm. semantic-release 25 requires
-  Node `^22.14.0` or `>= 24.10.0`, so the previous Node 20 runner failed.
+  Node `^22.14.0` or `>= 24.10.0`, so the previous Node 20 runner failed
+- `modules/github-repository` supports organization and user-owned
+  repositories via `owner_is_organization`. Organizations keep REST v3
+  branch protection and team assignments. User-owned repos use GraphQL
+  protection, reject `teams`, and never add the owner as a collaborator

@@ -78,6 +78,9 @@ These are load-bearing. Breaking them breaks the consumer contract.
    identity stack. Wire `AWS_ROLE_ARN` or GCP WIF outputs through
    environment variables (or equivalent inputs) after the human applies
    identity.
+8. **Owner type is explicit.** `owner_is_organization` defaults to `true`.
+   User-owned repositories (including this repo's self-bootstrap) must
+   set it `false` and must not pass `teams`.
 
 ## Code style
 

@@ -1,3 +1,9 @@
+variable "owner_is_organization" {
+  description = "Set true when the GitHub owner is an organization. Enables team assignments and REST v3 branch protection, including app push restrictions. Set false for a user-owned repository: teams are rejected, and GraphQL branch protection is used instead."
+  type        = bool
+  default     = true
+}
+
 variable "repo_name" {
   description = "Name of the GitHub repository to manage."
   type        = string
@@ -38,7 +44,7 @@ variable "users" {
 }
 
 variable "branch_protection_rules" {
-  description = "Branch protection v3 rules. Keys are Terraform addresses only. Pattern should be an exact branch name, not a glob."
+  description = "Branch protection rules. Keys are Terraform addresses only. Pattern is typically an exact branch name. Organization owners use the REST v3 API; user-owned repositories use the GraphQL API."
   type = map(object({
     pattern                         = string
     enforce_admins                  = optional(bool, true)

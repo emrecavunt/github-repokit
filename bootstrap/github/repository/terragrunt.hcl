@@ -20,13 +20,6 @@ inputs = {
     "bootstrap",
   ]
 
-  users = {
-    emrecavunt = {
-      username   = "emrecavunt"
-      permission = "admin"
-    }
-  }
-
   branch_protection_rules = {
     main = {
       pattern                         = "main"
@@ -47,6 +40,7 @@ inputs = {
   }
 
   manage_repository_settings = true
+  owner_is_organization      = false
   delete_branch_on_merge     = true
   has_issues                 = true
   has_wiki                   = false

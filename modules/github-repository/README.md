@@ -12,13 +12,30 @@ environments.
 - Optional `github_repository` settings (visibility, topics, homepage,
   issues, wiki, Dependabot alerts, delete-branch-on-merge,
   `archive_on_destroy`)
-- Team and user collaborator permissions
-- Branch protection v3 (signed commits, reviews, required checks). The
-  pattern should be an exact branch name
+- Team assignments when `owner_is_organization = true`
+- User collaborator permissions. The repository owner is omitted
+  automatically; GitHub rejects adding the owner as a collaborator
+- Branch protection (signed commits, reviews, required checks).
+  Organization owners use REST v3, including app push restrictions.
+  User-owned repositories use GraphQL. Pattern is typically an exact
+  branch name
 - `.github/CODEOWNERS` as a managed file
 - GitHub environments, including protected production environments
 - Actions variables at environment scope, and optionally at repo scope
   (`write_repository_actions_variables`)
+
+## Organization vs user-owned repositories
+
+Set `owner_is_organization` to match the GitHub owner:
+
+| Owner | `owner_is_organization` | Teams | Branch protection |
+| ----- | ----------------------- | ----- | ----------------- |
+| Organization | `true` (default) | Applied | REST v3 |
+| User | `false` | Rejected | GraphQL |
+
+A user-owned public repository cannot use `github_branch_protection_v3`
+and cannot add the owner as a collaborator. This repository's
+self-bootstrap sets `owner_is_organization = false`.
 
 ## Existing repositories
 

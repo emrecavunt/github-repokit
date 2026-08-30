@@ -50,4 +50,5 @@ inputs = {
   has_issues                         = true
   has_wiki                           = false
   vulnerability_alerts               = true
+  owner_is_organization              = true
 }
