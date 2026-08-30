@@ -44,6 +44,28 @@ The catch: this does **not** write workflow YAML and does **not** manage the
 GitHub organization. Workflows stay in `.github/workflows/` of each consumer.
 Org-level teams, rulesets, and SSO belong in a separate org stack.
 
+## How it works
+
+Diagrams live in [`docs/diagrams/`](docs/diagrams/) as self-contained HTML
+with SVG exports. Click through for the full-size interactive versions.
+
+**The OIDC token exchange** — a workflow job trades a per-run GitHub JWT for
+short-lived cloud credentials; no key is ever stored in GitHub:
+
+[![How GitHub Actions gets keyless cloud access](docs/diagrams/oidc-token-exchange.svg)](docs/diagrams/oidc-token-exchange.html)
+
+**What the modules configure** — `github-repository` owns settings and
+Actions environments inside GitHub; the optional identity modules create the
+AWS role and GCP WIF resources whose outputs feed Actions variables:
+
+[![What github-bootstrapper configures](docs/diagrams/repo-architecture.svg)](docs/diagrams/repo-architecture.html)
+
+**The trust gates** — every credential exchange passes the issuer-signature,
+audience, and repository-claim checks before scoped, expiring credentials
+are minted:
+
+[![The OIDC trust gates](docs/diagrams/security-gates.svg)](docs/diagrams/security-gates.html)
+
 ## Quickstart
 
 Requires [Terraform](https://developer.hashicorp.com/terraform/install) `>= 1.7`
@@ -225,6 +247,35 @@ WIF mode:
 
 A walkthrough with optional AWS and GCP stacks lives in
 [`examples/repository-consumer`](examples/repository-consumer/README.md).
+
+## Remote state (optional)
+
+Every Terragrunt root defaults to local state under `.terragrunt-state/`,
+so nothing beyond a `GITHUB_TOKEN` is needed to start. When an AWS or GCP
+project exists, store state remotely instead — set the backend env vars
+before `make tg-plan` / `make apply`:
+
+```bash
+# AWS: state in S3
+export TG_STATE_BACKEND=s3
+export TG_STATE_BUCKET=my-terraform-state   # must already exist
+
+# GCP: state in GCS
+export TG_STATE_BACKEND=gcs
+export TG_STATE_BUCKET=my-terraform-state   # must already exist
+```
+
+| Variable                  | Meaning                                                              |
+| ------------------------- | -------------------------------------------------------------------- |
+| `TG_STATE_BACKEND`        | `local` (default), `s3`, or `gcs`                                    |
+| `TG_STATE_BUCKET`         | Bucket name; required for `s3` and `gcs`                             |
+| `TG_STATE_PREFIX`         | Object key prefix (defaults to a per-root path)                      |
+| `TG_STATE_AWS_REGION`     | S3 bucket region (defaults to `AWS_REGION`, then `eu-west-1`)        |
+| `TG_STATE_DYNAMODB_TABLE` | Optional DynamoDB table for S3 state locking                         |
+
+S3 state is written with `encrypt = true`. The bucket is not created by
+this repo — create it once (with versioning enabled) in the account or
+project that the identity stack targets.
 
 ## Self-bootstrap
 

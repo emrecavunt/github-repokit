@@ -81,6 +81,13 @@ Optional GCP identity:
 - `EXAMPLE_GCP_WIF_PROVIDER` (pass `gcp/identity` provider name into actions)
 - `EXAMPLE_GCP_TERRAFORM_SA` (pass `gcp/identity` SA email into actions)
 
+Optional remote state (defaults to local state under `.terragrunt-state/`;
+see the [root README](../../README.md#remote-state-optional)):
+
+- `TG_STATE_BACKEND` (`local`, `s3`, or `gcs`)
+- `TG_STATE_BUCKET` (required for `s3`/`gcs`; the bucket must already exist)
+- `TG_STATE_PREFIX`, `TG_STATE_AWS_REGION`, `TG_STATE_DYNAMODB_TABLE`
+
 ## Commands
 
 GitHub only:
