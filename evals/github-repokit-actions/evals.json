@@ -1,0 +1,37 @@
+{
+  "skill_name": "github-repokit-actions",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Add GitHub environments (dev and prod) to the fixture at files/missing-actions. Repo name is fixture-missing-actions. Do not write workflow YAML. Do not apply. Do not add AWS or GCP unless I ask.",
+      "expected_output": "bootstrap/github/actions/terragrunt.hcl with manage_repository_settings false, include \"root\", prod protected, empty identity variables, no workflow YAML, no Terragrunt dependency on identity.",
+      "files": [
+        "files/missing-actions/README.md",
+        "files/missing-actions/bootstrap/github/root.hcl",
+        "files/missing-actions/bootstrap/github/repository/terragrunt.hcl"
+      ],
+      "assertions": [
+        "outputs contain bootstrap/github/actions/terragrunt.hcl",
+        "manage_repository_settings is false",
+        "prod has protected = true",
+        "no Terragrunt dependency block on identity",
+        "no .github/workflows files added",
+        "no .tfstate files"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "The fixture at files/legacy-github-actions already has bootstrap/github-actions. Complete whatever is missing. Do not normalize the path.",
+      "expected_output": "Path bootstrap/github-actions/ is left in place. No new bootstrap/github/actions/ directory.",
+      "files": [
+        "files/legacy-github-actions/bootstrap/github/root.hcl",
+        "files/legacy-github-actions/bootstrap/github-actions/terragrunt.hcl"
+      ],
+      "assertions": [
+        "outputs still contain bootstrap/github-actions/terragrunt.hcl",
+        "outputs do not contain bootstrap/github/actions/terragrunt.hcl",
+        "no .tfstate files"
+      ]
+    }
+  ]
+}

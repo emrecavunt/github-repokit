@@ -1,3 +1,6 @@
+# Skill eval workspaces (session-driven; never ship with the plugin)
+evals/workspaces/
+
 .DS_Store
 node_modules/
 .terragrunt-cache/

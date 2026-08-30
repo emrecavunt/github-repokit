@@ -9,6 +9,10 @@ via `semantic-release` (see `.github/workflows/release.yml`).
 
 ### Added
 
+- Agent plugin `github-repokit` with four skills (`github-repokit-repository`,
+  `github-repokit-actions`, `github-repokit-aws-oidc`, `github-repokit-gcp-wif`),
+  Agent Plugins 1.0 + Claude Code dual manifests, hosted GitHub MCP, and a
+  hook that denies `terraform` / `terragrunt` / `tofu apply`
 - `modules/github-aws-oidc` for GitHub Actions IAM OIDC, scoped to
   trusted repositories, with optional Secrets Manager / SSM read access
 - Public release of the GitHub repository and GCP WIF/OIDC bootstrap

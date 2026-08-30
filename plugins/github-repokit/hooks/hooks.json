@@ -1,0 +1,16 @@
+{
+  "description": "Block terraform/terragrunt/tofu apply. Plan is allowed; apply is human-gated.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/deny-apply.sh\""
+          }
+        ]
+      }
+    ]
+  }
+}

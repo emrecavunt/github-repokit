@@ -1,0 +1,28 @@
+{
+  "name": "github-repokit",
+  "owner": {
+    "name": "Emre Cavunt",
+    "url": "https://github.com/emrecavunt"
+  },
+  "metadata": {
+    "description": "GitHub RepoKit plugins. Single skills: npx skills add emrecavunt/github-repokit --skill <name>."
+  },
+  "plugins": [
+    {
+      "name": "github-repokit",
+      "source": "./plugins/github-repokit",
+      "description": "Per-repository GitHub governance as Terragrunt, plus optional AWS OIDC and GCP WIF. Apply is human-gated. Does not write workflow YAML or manage the GitHub organization.",
+      "version": "0.1.0",
+      "category": "devops",
+      "keywords": [
+        "github",
+        "terraform",
+        "terragrunt",
+        "governance",
+        "oidc",
+        "wif",
+        "github-actions"
+      ]
+    }
+  ]
+}

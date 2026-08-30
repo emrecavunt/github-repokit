@@ -1,0 +1,21 @@
+{
+  "name": "github-repokit",
+  "version": "0.1.0",
+  "description": "Per-repository GitHub governance as Terragrunt, plus optional AWS OIDC and GCP WIF. Apply is human-gated. Does not write workflow YAML or manage the GitHub organization.",
+  "author": {
+    "name": "Emre Cavunt",
+    "url": "https://github.com/emrecavunt"
+  },
+  "homepage": "https://github.com/emrecavunt/github-repokit",
+  "repository": "https://github.com/emrecavunt/github-repokit",
+  "license": "MIT",
+  "keywords": [
+    "github",
+    "terraform",
+    "terragrunt",
+    "governance",
+    "oidc",
+    "wif",
+    "github-actions"
+  ]
+}

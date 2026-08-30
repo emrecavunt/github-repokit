@@ -1,0 +1,10 @@
+[
+  { "query": "Add AWS OIDC so GitHub Actions can assume a role", "should_trigger": true },
+  { "query": "Create an IAM role trusted by GitHub OIDC for this repo", "should_trigger": true },
+  { "query": "Wire AWS_ROLE_ARN for keyless AWS from Actions", "should_trigger": true },
+  { "query": "We need Secrets Manager access from GitHub without long-lived keys", "should_trigger": true },
+  { "query": "Add CODEOWNERS and branch protection", "should_trigger": false },
+  { "query": "Set up GCP Workload Identity Federation for this repo", "should_trigger": false },
+  { "query": "Write the configure-aws-credentials workflow YAML", "should_trigger": false },
+  { "query": "Add GitHub environments for dev and prod", "should_trigger": false }
+]

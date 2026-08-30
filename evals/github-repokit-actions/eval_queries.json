@@ -1,0 +1,10 @@
+[
+  { "query": "Add GitHub environments for dev and prod through Terragrunt", "should_trigger": true },
+  { "query": "Protect the production GitHub environment and put Actions variables on it", "should_trigger": true },
+  { "query": "Set up bootstrap/github/actions without AWS or GCP", "should_trigger": true },
+  { "query": "Wire GitHub environment variables as code, not in the UI", "should_trigger": true },
+  { "query": "Write a verify.yml workflow that runs make check", "should_trigger": false },
+  { "query": "Add CODEOWNERS and branch protection to this repo", "should_trigger": false },
+  { "query": "Create an AWS OIDC role for GitHub Actions", "should_trigger": false },
+  { "query": "Add org-level GitHub secrets for the company", "should_trigger": false }
+]

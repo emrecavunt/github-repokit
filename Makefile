@@ -20,6 +20,7 @@ TERRAGRUNT_CMD ?= terragrunt
 TERRAFORM_CMD ?= terraform
 TFLINT ?= tflint
 TRIVY ?= trivy
+PYTHON ?= python3
 RECURSIVE_FLAG ?= --terragrunt-include-dir-root --terragrunt-include-external-dependencies
 TERRAGRUNT_DIR ?= bootstrap/github
 
@@ -84,6 +85,12 @@ lint: ## Run TFLint when available
 scan: ## Run Trivy config scan when available
 	$(call run-optional-tool,$(TRIVY),Trivy config scan,$(TRIVY) config .,scan)
 
+.PHONY: plugin-check
+plugin-check: ## Validate the agent plugin, marketplace catalog, and eval suites
+	@echo "Checking plugin manifests and eval suites..."
+	@$(PYTHON) tooling/plugin-check.py
+	@$(PYTHON) tooling/skill-evals-check.py
+
 .PHONY: tg-init
 tg-init: ## Initialize the self-bootstrap Terragrunt stack
 	$(call run-in-tg-dir,$(TERRAGRUNT_CMD) init --all --non-interactive,Nothing to initialize.)
@@ -110,7 +117,7 @@ apply: ## Apply the self-bootstrap stack
 
 # Run all checks
 .PHONY: check
-check: fmt validate lint scan ## Format, validate, lint, and scan (what CI runs)
+check: fmt validate lint scan plugin-check ## Format, validate, lint, scan, and plugin checks (what CI runs)
 
 .PHONY: all
 all: ## Apply the self-bootstrap stack, or run checks when no live stack exists

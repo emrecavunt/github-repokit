@@ -2,15 +2,9 @@ name: CI
 
 on:
   pull_request:
-    paths-ignore:
-      - "**/*.md"
-      - "docs/**"
   push:
     branches:
       - main
-    paths-ignore:
-      - "**/*.md"
-      - "docs/**"
 
 permissions:
   contents: read
@@ -72,3 +66,16 @@ jobs:
               terraform -chdir="$module" validate
             fi
           done
+
+  plugin:
+    name: Plugin and eval checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Plugin check
+        run: make plugin-check

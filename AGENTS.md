@@ -42,11 +42,12 @@ Prefer the Makefile targets; `make` lists them all.
 
 | Task                                   | Command          |
 | -------------------------------------- | ---------------- |
-| Format                                 | `make fmt`       |
-| Validate modules and stacks            | `make validate`  |
-| Lint (TFLint, skipped if missing)      | `make lint`      |
-| Trivy config scan (skipped if missing) | `make scan`      |
-| **Full pre-push gate (what CI runs)**  | **`make check`** |
+| Format                                 | `make fmt`          |
+| Validate modules and stacks            | `make validate`     |
+| Lint (TFLint, skipped if missing)      | `make lint`         |
+| Trivy config scan (skipped if missing) | `make scan`         |
+| Plugin / eval schema checks            | `make plugin-check` |
+| **Full pre-push gate (what CI runs)**  | **`make check`**    |
 
 Run `make check` before considering any code change done. A change that
 does not pass `make check` is not finished.
@@ -72,7 +73,9 @@ These are load-bearing. Breaking them breaks the consumer contract.
    and `bootstrap/github/actions`, not sibling `github-repository` /
    `github-actions` folders or `repo` / `env-vars` names. Leave an
    existing non-standard path in a consumer unless the human asks to
-   move state.
+   move state. The installable procedure is
+   `plugins/github-repokit/skills/`; do not duplicate skills under
+   `.cursor/skills/` or `.claude/skills/`.
 7. **Cloud identity is optional.** `bootstrap/github/actions` must plan
    without AWS or GCP. Do not add a Terragrunt `dependency` on an
    identity stack. Wire `AWS_ROLE_ARN` or GCP WIF outputs through
@@ -105,7 +108,8 @@ the consumer path.
 
 ## CI/CD
 
-- `.github/workflows/ci.yml`: conventional PR title plus Terraform checks
+- `.github/workflows/ci.yml`: conventional PR title, Terraform checks,
+  and plugin/eval schema checks
 - CodeQL and dependency-review scan PRs
 - Releases: pushes to `main` run `semantic-release` (Node 26, pnpm) and
   cut `vX.Y.Z`. Root `package.json` is release tooling only; do not

@@ -1,0 +1,28 @@
+{
+  "skill_name": "github-repokit-aws-oidc",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Add AWS OIDC so GitHub Actions can assume a role for secrets. Fixture is files/missing-aws. Owner your-org, repo fixture-missing-aws. Stop before apply. Do not write workflow YAML.",
+      "expected_output": "bootstrap/aws/identity/terragrunt.hcl sourcing github-aws-oidc, no workflow YAML, no Terragrunt dependency from github/actions, no apply.",
+      "files": ["files/missing-aws/README.md"],
+      "assertions": [
+        "outputs contain bootstrap/aws/identity/terragrunt.hcl",
+        "source references github-repokit//modules/github-aws-oidc",
+        "no .github/workflows files added",
+        "no Terragrunt dependency on github/actions",
+        "no .tfstate files"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Add CODEOWNERS to the fixture at files/not-asked. Do not add AWS.",
+      "expected_output": "No bootstrap/aws/ tree. Agent does not create an OIDC role because the human did not ask for AWS.",
+      "files": ["files/not-asked/README.md"],
+      "assertions": [
+        "outputs do not contain bootstrap/aws/identity/terragrunt.hcl",
+        "no .tfstate files"
+      ]
+    }
+  ]
+}

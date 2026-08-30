@@ -1,0 +1,10 @@
+[
+  { "query": "Add GCP Workload Identity Federation for GitHub Actions", "should_trigger": true },
+  { "query": "Wire GCP_WORKLOAD_IDENTITY_PROVIDER for keyless GCP from CI", "should_trigger": true },
+  { "query": "Create a GitHub WIF pool and terraform apply service account", "should_trigger": true },
+  { "query": "We need WIF instead of a JSON key in GitHub secrets", "should_trigger": true },
+  { "query": "Add CODEOWNERS and branch protection", "should_trigger": false },
+  { "query": "Create an AWS OIDC role for this repository", "should_trigger": false },
+  { "query": "Write google-github-actions/auth workflow YAML", "should_trigger": false },
+  { "query": "Add GitHub environments for dev and prod", "should_trigger": false }
+]

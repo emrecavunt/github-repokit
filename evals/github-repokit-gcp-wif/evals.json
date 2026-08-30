@@ -1,0 +1,28 @@
+{
+  "skill_name": "github-repokit-gcp-wif",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Add GCP WIF so GitHub Actions can impersonate a service account. Fixture is files/missing-gcp. Project your-gcp-project, owner your-org, repo fixture-missing-gcp. Stop before apply. Do not write workflow YAML.",
+      "expected_output": "bootstrap/gcp/identity/terragrunt.hcl sourcing github-wif-oidc, placeholder project id only, no workflow YAML, no apply.",
+      "files": ["files/missing-gcp/README.md"],
+      "assertions": [
+        "outputs contain bootstrap/gcp/identity/terragrunt.hcl",
+        "source references github-repokit//modules/github-wif-oidc",
+        "no live GCP project numbers",
+        "no .github/workflows files added",
+        "no .tfstate files"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Add GitHub environments to the fixture at files/not-asked. Do not add GCP.",
+      "expected_output": "No bootstrap/gcp/ tree because the human did not ask for GCP.",
+      "files": ["files/not-asked/README.md"],
+      "assertions": [
+        "outputs do not contain bootstrap/gcp/identity/terragrunt.hcl",
+        "no .tfstate files"
+      ]
+    }
+  ]
+}

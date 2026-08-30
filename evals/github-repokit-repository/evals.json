@@ -1,0 +1,47 @@
+{
+  "skill_name": "github-repokit-repository",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Add GitHub repository bootstrap to the fixture at files/missing-bootstrap. Repo name is fixture-missing-bootstrap. Use the GitHub RepoKit layout and stop before terragrunt apply.",
+      "expected_output": "bootstrap/github/root.hcl and bootstrap/github/repository/terragrunt.hcl with include \"root\", consuming github-repokit//modules/github-repository, required_status_checks false, no apply, no live cloud identifiers.",
+      "files": ["files/missing-bootstrap/README.md", "files/missing-bootstrap/Makefile"],
+      "assertions": [
+        "outputs contain bootstrap/github/root.hcl",
+        "outputs contain bootstrap/github/repository/terragrunt.hcl",
+        "terragrunt.hcl contains include \"root\"",
+        "source references github-repokit//modules/github-repository",
+        "required_status_checks is false",
+        "no .tfstate files",
+        "no live GCP project IDs or WIF resource names"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "hey can you bootstrap github for the repo in files/casual-missing? it's called fixture-casual-missing — just the governance files, don't apply anything",
+      "expected_output": "Same canonical layout as eval 1, filled for fixture-casual-missing, apply not executed.",
+      "files": ["files/casual-missing/README.md", "files/casual-missing/Makefile"],
+      "assertions": [
+        "outputs contain bootstrap/github/repository/terragrunt.hcl",
+        "terragrunt.hcl contains include \"root\"",
+        "source references github-repokit//modules/github-repository",
+        "no .tfstate files"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "The fixture at files/nonstandard-path already has GitHub bootstrap under bootstrap/github-repository. Complete whatever is missing. Do not normalize the path unless I ask.",
+      "expected_output": "Path bootstrap/github-repository/ is left in place. No new bootstrap/github/repository/ directory. Agent does not move Terraform state.",
+      "files": [
+        "files/nonstandard-path/bootstrap/root.hcl",
+        "files/nonstandard-path/bootstrap/github-repository/terragrunt.hcl"
+      ],
+      "assertions": [
+        "outputs still contain bootstrap/github-repository/terragrunt.hcl",
+        "outputs do not contain bootstrap/github/repository/terragrunt.hcl",
+        "source references modules/github-repository",
+        "no .tfstate files"
+      ]
+    }
+  ]
+}

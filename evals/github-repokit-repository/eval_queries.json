@@ -1,0 +1,10 @@
+[
+  { "query": "Add bootstrap/github/repository Terragrunt so this repo governs itself", "should_trigger": true },
+  { "query": "hey can you bootstrap github settings and CODEOWNERS for my-service", "should_trigger": true },
+  { "query": "We are missing branch protection on main — wire it through the github-repository module", "should_trigger": true },
+  { "query": "this product repo has no GitHub governance stack, add GitHub RepoKit and stop before apply", "should_trigger": true },
+  { "query": "Update GitHub org teams and default repository permissions for the whole organization", "should_trigger": false },
+  { "query": "Write a GitHub Actions workflow that deploys the API to Cloud Run", "should_trigger": false },
+  { "query": "Add a make verify job to ci.yml for this repository", "should_trigger": false },
+  { "query": "Bump the terraform google provider in modules/github-wif-oidc", "should_trigger": false }
+]

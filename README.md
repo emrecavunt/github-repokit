@@ -39,9 +39,9 @@ org stack.
 - **`bootstrap/github`**: this repository managing itself with the same module
 
 `make` lists every target. `make check` is what CI runs: Terraform `fmt` and
-`validate`, TFLint, and Trivy when those tools are installed. Pushes to
-`main` cut a semver tag via `semantic-release`. Pin consumers to a published
-tag (`?ref=v1.0.0`), not `main`.
+`validate`, plugin/eval schema checks, TFLint, and Trivy when those tools are
+installed. Pushes to `main` cut a semver tag via `semantic-release`. Pin
+consumers to a published tag (`?ref=v1.0.0`), not `main`.
 
 ## How it works
 
@@ -83,9 +83,10 @@ make check
 
 | Target           | What it does                                          |
 | ---------------- | ----------------------------------------------------- |
-| `make check`     | Format, validate, lint, and Trivy (what CI runs)      |
+| `make check`     | Format, validate, lint, Trivy, and plugin checks      |
 | `make fmt`       | `terraform fmt` and `terragrunt hcl format`           |
 | `make validate`  | Validate each module and the `bootstrap/` stack       |
+| `make plugin-check` | Agent plugin manifests, catalog, and eval suites   |
 | `make tg-plan`   | Plan the self-bootstrap stack                         |
 | `make apply`     | Apply the self-bootstrap stack                        |
 
@@ -297,6 +298,21 @@ make tg-plan
 make apply
 ```
 
+## Agent plugin
+
+Installable skills live in [`plugins/github-repokit/`](plugins/README.md).
+They teach an agent to copy the Terragrunt stacks above into a consumer
+repo. They do **not** write workflow YAML and they do **not** apply.
+
+| Client | How |
+|---|---|
+| Claude Code | `/plugin marketplace add emrecavunt/github-repokit` then `/plugin install github-repokit@github-repokit` |
+| Skills CLI | `npx skills add emrecavunt/github-repokit --skill github-repokit-repository` |
+| Cursor / Codex | Point the client at `plugins/github-repokit/` |
+
+Eval suites stay in [`evals/`](evals/README.md) so the plugin install does
+not ship fixtures.
+
 ## Layout
 
 ```text
@@ -310,6 +326,8 @@ examples/repository-consumer/
   gcp/identity/              # optional
 bootstrap/github/
   repository/                # this repo, managing itself
+plugins/github-repokit/      # agent plugin (skills + MCP + deny-apply hook)
+evals/                       # skill eval suites; not installed with the plugin
 .github/workflows/           # ci, codeql, dependency-review, release
 Makefile                     # the front-end: run `make`
 ```
