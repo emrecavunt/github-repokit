@@ -40,6 +40,8 @@ bootstrap/github/actions/      # manage_repository_settings = false
 
 Keep settings, teams, branch protection, and CODEOWNERS on
 `repository`. Keep `github_environment_configs` on `actions`.
+The actions stack does not require AWS or GCP. Optional identity
+lives under `bootstrap/aws/identity` or `bootstrap/gcp/identity`.
 
 ## Environments
 

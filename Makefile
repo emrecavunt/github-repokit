@@ -27,6 +27,25 @@ TERRAGRUNT_DIR ?= bootstrap/github
 TERRAGRUNT_VERSION ?= 0.81.10
 TERRAFORM_VERSION ?= v1.12.2
 
+# Run $(1) in TERRAGRUNT_DIR when that stack exists; otherwise print $(2).
+define run-in-tg-dir
+	@if [ -d "$(TERRAGRUNT_DIR)" ]; then \
+		cd $(TERRAGRUNT_DIR) && $(1); \
+	else \
+		echo "No $(TERRAGRUNT_DIR)/ stack found. $(2)"; \
+	fi
+endef
+
+# Run $(3) when binary $(1) is on PATH; $(2) is the progress label, $(4) the skip noun.
+define run-optional-tool
+	@if command -v $(1) >/dev/null 2>&1; then \
+		echo "Running $(2)..."; \
+		$(3); \
+	else \
+		echo "$(1) is not installed. Skipping $(4)."; \
+	fi
+endef
+
 ##@ Development
 
 .PHONY: show
@@ -50,52 +69,28 @@ fmt: ## Format Terraform and Terragrunt files
 .PHONY: validate
 validate: ## Validate Terraform and Terragrunt configurations
 	@echo "Validating Terragrunt files..."
-	@if [ -d "$(TERRAGRUNT_DIR)" ]; then \
-		cd $(TERRAGRUNT_DIR) && $(TERRAGRUNT_CMD) hcl validate --all --inputs; \
-	else \
-		echo "No $(TERRAGRUNT_DIR)/ stack found. Skipping Terragrunt runtime validation."; \
-	fi
+	$(call run-in-tg-dir,$(TERRAGRUNT_CMD) hcl validate --all --inputs,Skipping Terragrunt runtime validation.)
 	@echo "Validating Terraform modules..."
-	@for module in modules/*; do \
-		if [ -d "$$module" ]; then \
-			echo " - $$module"; \
-			(cd "$$module" && $(TERRAFORM_CMD) validate) || exit 1; \
-		fi; \
+	@for module in modules/*/; do \
+		echo " - $$module"; \
+		(cd "$$module" && $(TERRAFORM_CMD) validate) || exit 1; \
 	done
 
 .PHONY: lint
 lint: ## Run TFLint when available
-	@if command -v $(TFLINT) >/dev/null 2>&1; then \
-		echo "Running TFLint..."; \
-		$(TFLINT) --recursive; \
-	else \
-		echo "tflint is not installed. Skipping lint."; \
-	fi
+	$(call run-optional-tool,$(TFLINT),TFLint,$(TFLINT) --recursive,lint)
 
 .PHONY: scan
 scan: ## Run Trivy config scan when available
-	@if command -v $(TRIVY) >/dev/null 2>&1; then \
-		echo "Running Trivy config scan..."; \
-		$(TRIVY) config .; \
-	else \
-		echo "trivy is not installed. Skipping scan."; \
-	fi
+	$(call run-optional-tool,$(TRIVY),Trivy config scan,$(TRIVY) config .,scan)
 
 .PHONY: tg-init
 tg-init: ## Initialize Terragrunt and Terraform configurations
-	@if [ -d "$(TERRAGRUNT_DIR)" ]; then \
-		cd $(TERRAGRUNT_DIR) && $(TERRAGRUNT_CMD) init --all --non-interactive; \
-	else \
-		echo "No $(TERRAGRUNT_DIR)/ stack found. Nothing to initialize."; \
-	fi
+	$(call run-in-tg-dir,$(TERRAGRUNT_CMD) init --all --non-interactive,Nothing to initialize.)
 
 .PHONY: tg-plan
 tg-plan: ## Plan the Terraform configuration
-	@if [ -d "$(TERRAGRUNT_DIR)" ]; then \
-		cd $(TERRAGRUNT_DIR) && $(TERRAGRUNT_CMD) plan --all --non-interactive; \
-	else \
-		echo "No $(TERRAGRUNT_DIR)/ stack found. Nothing to plan."; \
-	fi
+	$(call run-in-tg-dir,$(TERRAGRUNT_CMD) plan --all --non-interactive,Nothing to plan.)
 
 .PHONY: tg-import-repo-settings
 tg-import-repo-settings: ## Import existing repository settings resource (set REPO_NAME)
@@ -111,11 +106,7 @@ tg-import-repo-settings: ## Import existing repository settings resource (set RE
 
 .PHONY: apply
 apply: ## Apply the Terraform configuration
-	@if [ -d "$(TERRAGRUNT_DIR)" ]; then \
-		cd $(TERRAGRUNT_DIR) && $(TERRAGRUNT_CMD) apply --all --non-interactive --auto-approve; \
-	else \
-		echo "No $(TERRAGRUNT_DIR)/ stack found. Nothing to apply."; \
-	fi
+	$(call run-in-tg-dir,$(TERRAGRUNT_CMD) apply --all --non-interactive --auto-approve,Nothing to apply.)
 
 # Run all checks
 .PHONY: check

@@ -16,7 +16,7 @@ rather than opening a public issue. You should get a response within a week.
 Do not file a public issue for:
 
 - leaked tokens, keys, or service-account credentials
-- overly broad GitHub or GCP IAM bindings
+- overly broad GitHub, AWS, or GCP IAM bindings
 - workflow permission escalation
 - branch-protection bypasses
 
@@ -28,7 +28,8 @@ Do not file a public issue for:
   (`dependency-review.yml`)
 - Trivy config scan in `make check` (and in CI when Trivy is available)
 - Least-privilege workflow permissions (`contents: read` on CI)
-- Keyless GCP path (`modules/github-wif-oidc`) so no long-lived cloud
-  key needs to live in GitHub Actions
+- Keyless AWS (`modules/github-aws-oidc`) and GCP
+  (`modules/github-wif-oidc`) paths so no long-lived cloud key needs to
+  live in GitHub Actions
 - Branch protection, signed commits, and CODEOWNERS are first-class
   module inputs — not afterthoughts

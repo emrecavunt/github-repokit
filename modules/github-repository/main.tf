@@ -1,66 +1,3 @@
-locals {
-  codeowners_lines = [
-    for pattern, owners in var.codeowners :
-    "${pattern} ${join(" ", owners)}"
-  ]
-
-  permission_aliases = {
-    read  = "pull"
-    write = "push"
-  }
-
-  normalized_teams = {
-    for key, team in var.teams : key => merge(team, {
-      permission = lookup(local.permission_aliases, lower(team.permission), lower(team.permission))
-    })
-  }
-
-  normalized_users = {
-    for key, user in var.users : key => merge(user, {
-      permission = lookup(local.permission_aliases, lower(user.permission), lower(user.permission))
-    })
-  }
-
-  normalized_github_environments = toset([for environment in var.github_environments : trimspace(environment)])
-
-  legacy_environment_definitions = {
-    for environment in local.normalized_github_environments : environment => {
-      can_admins_bypass   = false
-      prevent_self_review = true
-      reviewer_team_ids   = []
-      reviewer_user_ids   = []
-      protected           = false
-      variables           = var.github_actions_variables
-    }
-  }
-
-  configured_environment_definitions = {
-    for environment, config in var.github_environment_configs : trimspace(environment) => {
-      can_admins_bypass   = try(config.can_admins_bypass, false)
-      prevent_self_review = try(config.prevent_self_review, true)
-      reviewer_team_ids   = try(config.reviewer_team_ids, [])
-      reviewer_user_ids   = try(config.reviewer_user_ids, [])
-      protected           = try(config.protected, false)
-      variables           = try(config.variables, {})
-    }
-  }
-
-  environment_definitions = merge(local.legacy_environment_definitions, local.configured_environment_definitions)
-
-  actions_environment_variable_matrix = {
-    for item in flatten([
-      for environment, config in local.environment_definitions : [
-        for variable_name, value in config.variables : {
-          key           = "${environment}:${variable_name}"
-          environment   = environment
-          variable_name = variable_name
-          value         = value
-        }
-      ]
-    ]) : item.key => item
-  }
-}
-
 data "github_team" "by_slug" {
   for_each = local.normalized_teams
   slug     = each.value.slug
@@ -117,7 +54,7 @@ resource "github_repository_environment" "this" {
   prevent_self_review = each.value.prevent_self_review
 
   dynamic "reviewers" {
-    for_each = length(each.value.reviewer_team_ids) > 0 || length(each.value.reviewer_user_ids) > 0 ? [1] : []
+    for_each = length(concat(each.value.reviewer_team_ids, each.value.reviewer_user_ids)) > 0 ? [1] : []
 
     content {
       teams = each.value.reviewer_team_ids
@@ -164,7 +101,7 @@ resource "github_branch_protection_v3" "this" {
   require_conversation_resolution = each.value.require_conversation_resolution
 
   required_status_checks {
-    strict = each.value.required_status_checks ? each.value.strict_status_checks : false
+    strict = each.value.required_status_checks && each.value.strict_status_checks
     checks = each.value.required_status_checks ? each.value.required_status_check_contexts : []
   }
 

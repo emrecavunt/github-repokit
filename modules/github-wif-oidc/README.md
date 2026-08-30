@@ -2,6 +2,10 @@
 
 Reusable GCP identity bootstrap module for GitHub Actions OIDC + Workload Identity Federation.
 
+This stack is optional. GitHub Actions bootstrap does not require GCP.
+Add it only when workflows need keyless GCP access. AWS uses
+`modules/github-aws-oidc` the same way.
+
 ## What it manages
 
 - Terraform apply service account

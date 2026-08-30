@@ -14,6 +14,15 @@ TERRAFORM_CMD ?= terraform
 TFLINT ?= tflint
 TRIVY ?= trivy
 
+# Run $(2) when binary $(1) is on PATH; $(3) is the skip noun.
+define run-optional-tool
+	@if command -v $(1) >/dev/null 2>&1; then \
+		$(2); \
+	else \
+		echo "$(1) is not installed. Skipping $(3)."; \
+	fi
+endef
+
 ##@ Development
 
 .PHONY: show
@@ -35,19 +44,11 @@ validate: ## Validate Terraform and Terragrunt configurations
 
 .PHONY: lint
 lint: ## Run TFLint when available
-	@if command -v $(TFLINT) >/dev/null 2>&1; then \
-		$(TFLINT) --recursive; \
-	else \
-		echo "tflint is not installed. Skipping lint."; \
-	fi
+	$(call run-optional-tool,$(TFLINT),$(TFLINT) --recursive,lint)
 
 .PHONY: scan
 scan: ## Run Trivy config scan when available
-	@if command -v $(TRIVY) >/dev/null 2>&1; then \
-		$(TRIVY) config .; \
-	else \
-		echo "trivy is not installed. Skipping scan."; \
-	fi
+	$(call run-optional-tool,$(TRIVY),$(TRIVY) config .,scan)
 
 .PHONY: tg-init
 tg-init: ## Initialize Terragrunt and Terraform configurations

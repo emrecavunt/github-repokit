@@ -6,8 +6,10 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 Terraform modules that put GitHub repository governance in the repo itself:
-settings, team and collaborator access, branch protection, CODEOWNERS, Actions
-environments, and keyless GCP identity for GitHub Actions.
+settings, team and collaborator access, branch protection, CODEOWNERS, and
+Actions environments. Optional AWS or GCP OIDC identity can be added when
+workflows need keyless cloud access. Neither cloud is required to bootstrap
+GitHub Actions.
 
 Clone it, point Terragrunt at a module, and each product repo can own its
 GitHub configuration the same way it owns its application code. Organization
@@ -19,12 +21,15 @@ deliberately per-repository.
 - **`modules/github-repository`**: one repo's settings, team/user access,
   branch protection (signed commits, reviews, required checks), CODEOWNERS,
   GitHub environments, and Actions variables (per-environment or repo-scoped)
-- **`modules/github-wif-oidc`**: GCP Workload Identity Federation for GitHub
-  Actions — a Terraform apply service account, project IAM, and optional
+- **`modules/github-aws-oidc`**: optional AWS IAM OIDC role for GitHub
+  Actions — assume-role trust scoped to owner/repo, plus Secrets Manager
+  and SSM read on the ARNs you pass. No long-lived AWS key in CI
+- **`modules/github-wif-oidc`**: optional GCP Workload Identity Federation
+  — a Terraform apply service account, project IAM, and optional
   project-local WIF pool/provider. No long-lived JSON key in CI
 - **`examples/repository-consumer`**: a copy-ready Terragrunt split —
-  `gcp/` first (identity), then `github/repository` (settings) and
-  `github/actions` (environments + variables that read identity outputs)
+  `github/repository` and `github/actions` first (no cloud), then optional
+  `aws/identity` or `gcp/identity` if workflows need that provider
 - **`bootstrap/github`**: this repository managing itself with the same module
 - **A Makefile front-end**: `make` lists everything, `make check` is what CI
   runs
@@ -44,8 +49,8 @@ Org-level teams, rulesets, and SSO belong in a separate org stack.
 Requires [Terraform](https://developer.hashicorp.com/terraform/install) `>= 1.7`
 and [Terragrunt](https://terragrunt.gruntwork.io/). A `GITHUB_TOKEN` with
 `repo` and `admin:org` (for team assignments) is enough for the GitHub
-module. The WIF module needs a GCP credential that can create service
-accounts and IAM bindings.
+module. AWS or GCP credentials are needed only when you apply an identity
+stack.
 
 ```bash
 git clone https://github.com/emrecavunt/github-bootstrapper.git
@@ -71,7 +76,8 @@ Each product or service repo keeps a small Terragrunt stack under
 - **`bootstrap/github/repository`** — settings, teams, branch protection,
   CODEOWNERS (`manage_repository_settings = true`)
 - **`bootstrap/github/actions`** — environments and Actions variables
-  (`manage_repository_settings = false`)
+  (`manage_repository_settings = false`). AWS and GCP are optional; the
+  stack applies without either.
 
 Both source this module by tag. Repository stack:
 
@@ -131,21 +137,13 @@ inputs = {
 
   github_environment_configs = {
     dev = {
-      variables = {
-        GOOGLE_PROJECT                 = "my-service-dev"
-        GCP_WORKLOAD_IDENTITY_PROVIDER = "projects/111111111111/locations/global/workloadIdentityPools/github/providers/github"
-        GCP_TERRAFORM_SA               = "tf-apply@my-service-dev.iam.gserviceaccount.com"
-      }
+      variables = {}
     }
     prod = {
       protected           = true
       can_admins_bypass   = false
       prevent_self_review = true
-      variables = {
-        GOOGLE_PROJECT                 = "my-service-prod"
-        GCP_WORKLOAD_IDENTITY_PROVIDER = "projects/222222222222/locations/global/workloadIdentityPools/github/providers/github"
-        GCP_TERRAFORM_SA               = "tf-apply@my-service-prod.iam.gserviceaccount.com"
-      }
+      variables           = {}
     }
   }
 }
@@ -163,11 +161,39 @@ Legacy compatibility remains available:
 - `github_environment_configs` overrides legacy values for matching
   environment names
 
-## Shared WIF / OIDC usage
+## Optional cloud identity (AWS or GCP)
 
-Use `modules/github-wif-oidc` so each infra repo does not copy a local
-identity module. Apply it **before** the GitHub env-var stack so Actions
-can reference the provider and service account.
+Identity stacks are add-ons. Apply `bootstrap/github/actions` without them.
+When a workflow needs keyless access, add `bootstrap/<provider>/identity`
+and pass the outputs into Actions variables (`AWS_ROLE_ARN`,
+`GCP_WORKLOAD_IDENTITY_PROVIDER`, …). A new provider follows the same
+shape.
+
+### AWS OIDC (secrets)
+
+```hcl
+terraform {
+  source = "git::https://github.com/emrecavunt/github-bootstrapper.git//modules/github-aws-oidc?ref=v1.0.0"
+}
+
+inputs = {
+  role_name            = "github-actions-secrets"
+  github_owner         = "your-org"
+  github_repositories  = ["your-org/my-service"]
+  create_oidc_provider = true
+
+  secretsmanager_secret_arns = [
+    "arn:aws:secretsmanager:eu-west-1:111111111111:secret:app/dev/*",
+  ]
+}
+```
+
+Set `create_oidc_provider = false` and `oidc_provider_arn` to reuse an
+account-level GitHub OIDC provider. Pass `role_arn` to the actions stack
+as `AWS_ROLE_ARN`. This repo does not write the workflow that calls
+`aws-actions/configure-aws-credentials`.
+
+### GCP WIF
 
 ```hcl
 terraform {
@@ -197,7 +223,7 @@ WIF mode:
 - `create_project_wif_provider = true`: creates the pool and provider in
   `service_account_project_id`
 
-A working two-stack walkthrough lives in
+A walkthrough with optional AWS and GCP stacks lives in
 [`examples/repository-consumer`](examples/repository-consumer/README.md).
 
 ## Self-bootstrap
@@ -219,11 +245,13 @@ make apply
 
 ```
 modules/github-repository/   # per-repo GitHub governance
-modules/github-wif-oidc/     # GCP OIDC / WIF for GitHub Actions
+modules/github-aws-oidc/     # optional AWS OIDC for Actions secrets
+modules/github-wif-oidc/     # optional GCP OIDC / WIF
 examples/repository-consumer/
-  gcp/identity/              # apply first
   github/repository/         # settings, protection, CODEOWNERS
-  github/actions/            # environments + Actions variables
+  github/actions/            # environments; no cloud required
+  aws/identity/              # optional
+  gcp/identity/              # optional
 bootstrap/github/
   repository/                # this repo, managing itself
 .github/workflows/           # ci, codeql, dependency-review, release
@@ -245,8 +273,8 @@ Pin consumers to a published tag (`?ref=v1.0.0`), not `main`.
 ## Security
 
 See [SECURITY.md](SECURITY.md). In short: report privately, pin module
-versions, prefer WIF over stored cloud keys, and keep production GitHub
-environments `protected = true`.
+versions, prefer OIDC/WIF over stored cloud keys, and keep production
+GitHub environments `protected = true`.
 
 ## License
 

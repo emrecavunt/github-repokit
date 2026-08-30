@@ -7,14 +7,18 @@ what this codebase deliberately does not do.
 ## Project overview
 
 Reusable Terraform modules that bootstrap **per-repository** GitHub
-governance and optional GCP GitHub OIDC / Workload Identity Federation.
-Consumers source a module by git tag from their own Terragrunt stack.
+governance and optional cloud OIDC identity. Consumers source a module
+by git tag from their own Terragrunt stack.
 Canonical GitHub layout (what agents create and manage):
 
 - `bootstrap/github/repository` — settings, teams, branch protection, CODEOWNERS
 - `bootstrap/github/actions` — environments and Actions variables only
-  (`manage_repository_settings = false`)
-- `bootstrap/gcp` — optional WIF / identity, applied first
+  (`manage_repository_settings = false`). Does **not** require AWS or GCP.
+- `bootstrap/aws/identity` — optional AWS OIDC for Actions secrets
+- `bootstrap/gcp/identity` — optional GCP WIF
+- A new cloud follows `bootstrap/<provider>/identity` and a
+  `modules/github-<provider>-oidc` (or equivalent) module. Do not add
+  identity unless the human asks.
 
 This repository does **not** manage a GitHub organization and does **not**
 write GitHub Actions workflow YAML. Do not add org-level resources
@@ -26,9 +30,9 @@ consumers.
 - Terraform `>= 1.7`, Terragrunt for stacks under `bootstrap/github/` and
   `examples/`
 - GitHub operations need `GITHUB_TOKEN` and `GITHUB_OWNER`
-- GCP identity examples need Application Default Credentials and the
-  `EXAMPLE_*` overrides documented in
-  `examples/repository-consumer/README.md`
+- Optional AWS or GCP identity examples need that cloud's credentials
+  and the `EXAMPLE_*` overrides documented in
+  `examples/repository-consumer/README.md`. GitHub Actions stacks do not.
 - Agents should not `apply` or deploy unless explicitly asked
 
 ## Commands
@@ -51,7 +55,7 @@ does not pass `make check` is not finished.
 These are load-bearing. Breaking them breaks the consumer contract.
 
 1. **Per-repo only.** Modules manage one GitHub repository (and optional
-   GCP identity for that repo). Org-wide policy lives elsewhere.
+   cloud identity for that repo). Org-wide policy lives elsewhere.
 2. **Existing repos import by default.**
    `import_existing_repository = true` avoids `422 name already exists`
    when `manage_repository_settings = true`. Set it `false` only when the
@@ -68,6 +72,11 @@ These are load-bearing. Breaking them breaks the consumer contract.
    `github-actions` folders or `repo` / `env-vars` names. Leave an
    existing non-standard path in a consumer unless the human asks to
    move state.
+7. **Cloud identity is optional.** `bootstrap/github/actions` must plan
+   without AWS or GCP. Do not add a Terragrunt `dependency` on an
+   identity stack. Wire `AWS_ROLE_ARN` or GCP WIF outputs through
+   environment variables (or equivalent inputs) after the human applies
+   identity.
 
 ## Code style
 
@@ -83,7 +92,7 @@ These are load-bearing. Breaking them breaks the consumer contract.
 
 CI runs `terraform fmt -check -recursive` and `terraform init` +
 `validate` for each directory under `modules/`. There is no live GitHub
-or GCP apply in CI. A change that cannot validate with `-backend=false`
+or cloud apply in CI. A change that cannot validate with `-backend=false`
 is not finished.
 
 New module inputs need a matching `variable` description, a default or a
@@ -109,5 +118,5 @@ the consumer path.
   features. Propose tightening, not loosening.
 - **Don't add a runtime or a workflow generator.** This is a Terraform
   library. If the request needs GitHub Actions YAML, say so and stop.
-- **Keep dependencies minimal.** Prefer the GitHub and Google providers
-  you already have over new tools.
+- **Keep dependencies minimal.** Prefer the GitHub, AWS, and Google
+  providers already in this repo over new tools.

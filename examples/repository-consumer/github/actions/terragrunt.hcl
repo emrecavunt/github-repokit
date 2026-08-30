@@ -4,15 +4,31 @@ include "root" {
 
 locals {
   github_repo = get_env("EXAMPLE_GITHUB_REPO", "your-repo")
-}
 
-dependency "identity" {
-  config_path = "../../gcp/identity"
+  # Optional. GitHub Actions does not require AWS or GCP. Set these after
+  # applying bootstrap/aws/identity or bootstrap/gcp/identity if you want
+  # keyless cloud access from workflows.
+  aws_role_arn  = trimspace(get_env("EXAMPLE_AWS_ROLE_ARN", ""))
+  gcp_wif       = trimspace(get_env("EXAMPLE_GCP_WIF_PROVIDER", ""))
+  gcp_sa        = trimspace(get_env("EXAMPLE_GCP_TERRAFORM_SA", ""))
+  gcp_enabled   = local.gcp_wif != "" && local.gcp_sa != ""
+  aws_variables = local.aws_role_arn != "" ? { AWS_ROLE_ARN = local.aws_role_arn } : {}
 
-  mock_outputs_allowed_terraform_commands = ["validate", "plan"]
-  mock_outputs = {
-    workload_identity_provider_name       = "projects/000000000000/locations/global/workloadIdentityPools/github/providers/github"
-    terraform_apply_service_account_email = "github-actions@your-project.iam.gserviceaccount.com"
+  gcp_projects = {
+    dev   = get_env("EXAMPLE_GCP_PROJECT_DEV", "your-project-dev")
+    stage = get_env("EXAMPLE_GCP_PROJECT_STAGE", "your-project-stage")
+    prod  = get_env("EXAMPLE_GCP_PROJECT_PROD", "your-project-prod")
+  }
+
+  identity_variables = {
+    for environment, project in local.gcp_projects : environment => merge(
+      local.aws_variables,
+      local.gcp_enabled ? {
+        GOOGLE_PROJECT                 = project
+        GCP_WORKLOAD_IDENTITY_PROVIDER = local.gcp_wif
+        GCP_TERRAFORM_SA               = local.gcp_sa
+      } : {}
+    )
   }
 }
 
@@ -23,35 +39,23 @@ terraform {
 inputs = {
   repo_name = local.github_repo
 
-  # Environments and WIF variables only. Repo settings stay in
-  # bootstrap/github/repository.
+  # Environments only. Repo settings stay in bootstrap/github/repository.
+  # Cloud WIF is optional: variables stay empty until identity outputs are passed.
   manage_repository_settings         = false
   write_repository_actions_variables = false
 
   github_environment_configs = {
     dev = {
-      variables = {
-        GOOGLE_PROJECT                 = get_env("EXAMPLE_GCP_PROJECT_DEV", "your-project-dev")
-        GCP_WORKLOAD_IDENTITY_PROVIDER = dependency.identity.outputs.workload_identity_provider_name
-        GCP_TERRAFORM_SA               = dependency.identity.outputs.terraform_apply_service_account_email
-      }
+      variables = local.identity_variables.dev
     }
     stage = {
-      variables = {
-        GOOGLE_PROJECT                 = get_env("EXAMPLE_GCP_PROJECT_STAGE", "your-project-stage")
-        GCP_WORKLOAD_IDENTITY_PROVIDER = dependency.identity.outputs.workload_identity_provider_name
-        GCP_TERRAFORM_SA               = dependency.identity.outputs.terraform_apply_service_account_email
-      }
+      variables = local.identity_variables.stage
     }
     prod = {
       protected           = true
       can_admins_bypass   = false
       prevent_self_review = true
-      variables = {
-        GOOGLE_PROJECT                 = get_env("EXAMPLE_GCP_PROJECT_PROD", "your-project-prod")
-        GCP_WORKLOAD_IDENTITY_PROVIDER = dependency.identity.outputs.workload_identity_provider_name
-        GCP_TERRAFORM_SA               = dependency.identity.outputs.terraform_apply_service_account_email
-      }
+      variables           = local.identity_variables.prod
     }
   }
 }

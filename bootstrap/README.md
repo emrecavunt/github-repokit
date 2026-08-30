@@ -9,9 +9,12 @@ Consumer repos that need both should use:
 ```text
 bootstrap/github/repository/   # settings, teams, protection, CODEOWNERS
 bootstrap/github/actions/      # environments + Actions variables
+bootstrap/aws/identity/        # optional AWS OIDC
+bootstrap/gcp/identity/        # optional GCP WIF
 ```
 
-See `examples/repository-consumer` for the copy-ready split.
+`github/actions` applies without AWS or GCP. See
+`examples/repository-consumer` for the copy-ready split.
 
 **Apply is human-gated.** Requires a GitHub token with repo admin on
 `emrecavunt/github-bootstrapper`.
