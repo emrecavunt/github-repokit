@@ -24,7 +24,7 @@
       "prompt": "The fixture at files/legacy-github-actions already has bootstrap/github-actions. Complete whatever is missing. Do not normalize the path.",
       "expected_output": "Path bootstrap/github-actions/ is left in place. No new bootstrap/github/actions/ directory.",
       "files": [
-        "files/legacy-github-actions/bootstrap/github/root.hcl",
+        "files/legacy-github-actions/bootstrap/root.hcl",
         "files/legacy-github-actions/bootstrap/github-actions/terragrunt.hcl"
       ],
       "assertions": [

@@ -10,5 +10,11 @@ inputs = {
   repo_name                  = "fixture-nonstandard-path"
   manage_repository_settings = true
   owner_is_organization      = true
-  required_status_checks     = false
+
+  branch_protection_rules = {
+    main = {
+      pattern                = "main"
+      required_status_checks = false
+    }
+  }
 }

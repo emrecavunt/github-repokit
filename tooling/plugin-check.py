@@ -146,12 +146,14 @@ def _secret_scan(path: str, check: str, blob: str) -> None:
 def check_mcp(root: str) -> None:
     portable = os.path.join(root, "mcp.json")
     claude = os.path.join(root, ".mcp.json")
+    servers_by_path: dict[str, object] = {}
     for path, require_schema in ((portable, True), (claude, False)):
         if not os.path.isfile(path):
             continue
         data = load_json(path, "plugin-mcp")
         if data is None:
             continue
+        servers_by_path[path] = data.get("mcpServers")
         _secret_scan(path, "plugin-mcp", json.dumps(data))
         if require_schema and data.get("$schema") != MCP_SCHEMA:
             fail(path, "plugin-mcp", f"$schema must be {MCP_SCHEMA}")
@@ -189,6 +191,9 @@ def check_mcp(root: str) -> None:
                 for val in env.values():
                     if isinstance(val, str) and SECRET_RE.search(val):
                         fail(path, "plugin-mcp", "env must not embed secrets")
+    if portable in servers_by_path and claude in servers_by_path:
+        if servers_by_path[portable] != servers_by_path[claude]:
+            fail(claude, "plugin-mcp", "mcpServers differ from mcp.json; keep both files in sync")
 
 
 def check_hooks(root: str) -> None:
