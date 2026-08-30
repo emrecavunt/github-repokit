@@ -1,8 +1,8 @@
-# github-bootstrapper
+# github-repokit
 
-[![CI](https://github.com/emrecavunt/github-bootstrapper/actions/workflows/ci.yml/badge.svg)](https://github.com/emrecavunt/github-bootstrapper/actions/workflows/ci.yml)
-[![CodeQL](https://github.com/emrecavunt/github-bootstrapper/actions/workflows/codeql.yml/badge.svg)](https://github.com/emrecavunt/github-bootstrapper/actions/workflows/codeql.yml)
-[![Release](https://img.shields.io/github/v/release/emrecavunt/github-bootstrapper?include_prereleases&sort=semver)](https://github.com/emrecavunt/github-bootstrapper/releases)
+[![CI](https://github.com/emrecavunt/github-repokit/actions/workflows/ci.yml/badge.svg)](https://github.com/emrecavunt/github-repokit/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/emrecavunt/github-repokit/actions/workflows/codeql.yml/badge.svg)](https://github.com/emrecavunt/github-repokit/actions/workflows/codeql.yml)
+[![Release](https://img.shields.io/github/v/release/emrecavunt/github-repokit?include_prereleases&sort=semver)](https://github.com/emrecavunt/github-repokit/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 Terraform modules that put GitHub repository governance in the repo itself:
@@ -58,7 +58,7 @@ short-lived cloud credentials; no key is ever stored in GitHub:
 Actions environments inside GitHub; the optional identity modules create the
 AWS role and GCP WIF resources whose outputs feed Actions variables:
 
-[![What github-bootstrapper configures](docs/diagrams/repo-architecture.svg)](docs/diagrams/repo-architecture.html)
+[![What github-repokit configures](docs/diagrams/repo-architecture.svg)](docs/diagrams/repo-architecture.html)
 
 **The trust gates** — every credential exchange passes the issuer-signature,
 audience, and repository-claim checks before scoped, expiring credentials
@@ -75,8 +75,8 @@ module. AWS or GCP credentials are needed only when you apply an identity
 stack.
 
 ```bash
-git clone https://github.com/emrecavunt/github-bootstrapper.git
-cd github-bootstrapper
+git clone https://github.com/emrecavunt/github-repokit.git
+cd github-repokit
 make check
 ```
 
@@ -105,7 +105,7 @@ Both source this module by tag. Repository stack:
 
 ```hcl
 terraform {
-  source = "git::https://github.com/emrecavunt/github-bootstrapper.git//modules/github-repository?ref=v1.0.0"
+  source = "git::https://github.com/emrecavunt/github-repokit.git//modules/github-repository?ref=v1.0.0"
 }
 
 inputs = {
@@ -195,7 +195,7 @@ shape.
 
 ```hcl
 terraform {
-  source = "git::https://github.com/emrecavunt/github-bootstrapper.git//modules/github-aws-oidc?ref=v1.0.0"
+  source = "git::https://github.com/emrecavunt/github-repokit.git//modules/github-aws-oidc?ref=v1.0.0"
 }
 
 inputs = {
@@ -219,7 +219,7 @@ as `AWS_ROLE_ARN`. This repo does not write the workflow that calls
 
 ```hcl
 terraform {
-  source = "git::https://github.com/emrecavunt/github-bootstrapper.git//modules/github-wif-oidc?ref=v1.0.0"
+  source = "git::https://github.com/emrecavunt/github-repokit.git//modules/github-wif-oidc?ref=v1.0.0"
 }
 
 inputs = {
@@ -283,18 +283,18 @@ This repository can manage its own GitHub settings:
 
 ```bash
 export GITHUB_OWNER=emrecavunt
-export GITHUB_TOKEN=...   # repo admin on emrecavunt/github-bootstrapper
+export GITHUB_TOKEN=...   # repo admin on emrecavunt/github-repokit
 
 cd bootstrap/github
 make tg-init
-make tg-import-repo-settings REPO_NAME=github-bootstrapper
+make tg-import-repo-settings REPO_NAME=github-repokit
 make tg-plan
 make apply
 ```
 
 ## Layout
 
-```
+```text
 modules/github-repository/   # per-repo GitHub governance
 modules/github-aws-oidc/     # optional AWS OIDC for Actions secrets
 modules/github-wif-oidc/     # optional GCP OIDC / WIF

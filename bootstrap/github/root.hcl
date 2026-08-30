@@ -5,7 +5,7 @@ locals {
   # s3 and gcs require TG_STATE_BUCKET; the bucket must already exist.
   state_backend    = get_env("TG_STATE_BACKEND", "local")
   state_bucket     = get_env("TG_STATE_BUCKET", "")
-  state_prefix     = get_env("TG_STATE_PREFIX", "github-bootstrapper/bootstrap/github")
+  state_prefix     = get_env("TG_STATE_PREFIX", "github-repokit/bootstrap/github")
   state_aws_region = get_env("TG_STATE_AWS_REGION", get_env("AWS_REGION", "eu-west-1"))
   state_lock_table = get_env("TG_STATE_DYNAMODB_TABLE", "")
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg viewBox="0 0 1000 696" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="repo-arch-title repo-arch-desc">
-      <title id="repo-arch-title">What github-bootstrapper configures</title>
+      <title id="repo-arch-title">What github-repokit configures</title>
       <desc id="repo-arch-desc">Three Terraform modules apply resources across trust boundaries: github-repository manages repo settings and Actions environments in GitHub, while optional github-aws-oidc and github-wif-oidc create keyless cloud identities whose outputs feed back into Actions variables.</desc>
       <defs>
         <style>@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;display=swap');</style>

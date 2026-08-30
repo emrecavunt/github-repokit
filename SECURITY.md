@@ -10,7 +10,7 @@ and Terraform provider updates.
 ## Reporting a vulnerability
 
 Please report vulnerabilities privately via
-[GitHub Security Advisories](https://github.com/emrecavunt/github-bootstrapper/security/advisories/new)
+[GitHub Security Advisories](https://github.com/emrecavunt/github-repokit/security/advisories/new)
 rather than opening a public issue. You should get a response within a week.
 
 Do not file a public issue for:

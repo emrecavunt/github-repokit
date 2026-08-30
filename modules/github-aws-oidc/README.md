@@ -51,7 +51,7 @@ When that set is empty, the trust policy allows `repo:owner/repo:*`.
 
 ```hcl
 terraform {
-  source = "git::https://github.com/emrecavunt/github-bootstrapper.git//modules/github-aws-oidc?ref=v1.0.0"
+  source = "git::https://github.com/emrecavunt/github-repokit.git//modules/github-aws-oidc?ref=v1.0.0"
 }
 
 inputs = {

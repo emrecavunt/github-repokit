@@ -7,10 +7,10 @@ terraform {
 }
 
 inputs = {
-  repo_name    = "github-bootstrapper"
+  repo_name    = "github-repokit"
   description  = "Terraform modules to bootstrap GitHub repository settings, branch protection, CODEOWNERS, Actions environments, and keyless GCP OIDC/WIF."
   visibility   = "public"
-  homepage_url = "https://github.com/emrecavunt/github-bootstrapper"
+  homepage_url = "https://github.com/emrecavunt/github-repokit"
   topics = [
     "terraform",
     "terragrunt",
